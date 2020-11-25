@@ -14,86 +14,13 @@ from infomercial.utils import estimate_regret
 from infomercial.utils import load_checkpoint
 from infomercial.utils import save_checkpoint
 
+from parkid.utils import R_homeostasis
 from parkid.models import Critic
 from parkid.models import DeterministicActor
+from parkid.models import WSLS
+from parkid.models import WSLSh
 from parkid.gym.bandit import BanditUniform121
 from parkid.gym.bandit import BanditChange121
-
-
-def R_update(state, reward, critic, lr):
-    """Really simple TD learning"""
-
-    update = lr * (reward - critic(state))
-    critic.update(state, update)
-
-    return critic
-
-
-def E_update(state, value, critic, lr):
-    """Bellman update"""
-    update = lr * value
-    critic.replace(state, update)
-
-    return critic
-
-
-def R_homeostasis(reward, total_reward, set_point):
-    """Update reward value assuming homeostatic value.
-    
-    Value based on Keramati and Gutkin, 2014.
-    https://elifesciences.org/articles/04811
-    """
-    deviance_last = np.abs(set_point - total_reward)
-    deviance = np.abs(set_point - (total_reward + reward))
-    reward_value = deviance_last - deviance
-    return reward_value
-
-
-class WSLS:
-    """Win-stay lose-switch policy control"""
-    def __init__(self, actor_E, critic_E, actor_R, critic_R, boredom=0.0):
-        self.actor_R = actor_R
-        self.critic_R = critic_R
-        self.actor_E = actor_E
-        self.critic_E = critic_E
-        self.boredom = boredom
-
-    def __call__(self, E, R):
-        self.forward(E, R)
-
-    def update(self, action, E, R, lr_R):
-        self.critic_R = R_update(action, R, self.critic_R, lr_R)
-        self.critic_E = E_update(action, E, self.critic_E, lr=1)
-
-    def forward(self, E, R):
-        if (E - self.boredom) > R:
-            critic = self.critic_E
-            actor = self.actor_E
-            policy = 0
-        else:
-            critic = self.critic_R
-            actor = self.actor_R
-            policy = 1
-
-        return actor, critic, policy
-
-
-class WSLSh(WSLS):
-    """Win-stay lose-switch policy control (for homeostatic R)"""
-    def __init__(self, actor_E, critic_E, actor_R, critic_R, boredom=0.0):
-        super().__init__(actor_E, critic_E, actor_R, critic_R, boredom=boredom)
-
-    def forward(self, E, R):
-        if (E - self.boredom) >= R:
-            self.critic = self.critic_E
-            self.actor = self.actor_E
-            policy = 0
-        else:
-            self.critic = self.critic_R
-            self.actor = self.actor_R
-            policy = 1
-
-        return self.actor, self.critic, policy
 
 
 def parkid(num_episodes=1000,
