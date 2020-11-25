@@ -61,9 +61,9 @@ class WSLS:
     def __call__(self, E, R):
         self.forward(E, R)
 
-    def update(self, action, E_t, R_t, lr_R):
-        self.critic_R = R_update(action, R_t, self.critic_R, lr_R)
-        self.critic_E = E_update(action, E_t, self.critic_E, lr=1)
+    def update(self, action, E, R, lr_R):
+        self.critic_R = R_update(action, R, self.critic_R, lr_R)
+        self.critic_E = E_update(action, E, self.critic_E, lr=1)
 
     def forward(self, E, R):
         if (E - self.boredom) > R:
