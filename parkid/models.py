@@ -153,7 +153,7 @@ class DeterministicActor(object):
 
 class ThresholdActor(object):
     def __init__(self, num_actions, boredom=0.0, seed_value=None):
-        self.prng = np.random.RandomState(seed)
+        self.prng = np.random.RandomState(seed_value)
         self.boredom = boredom
         self.num_actions = num_actions
         self.actions = list(range(self.num_actions))
