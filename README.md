@@ -6,7 +6,7 @@ TODO
 
 # dependencies
 - a standard anaconda (python >=3.6)
-- informercial
+- infomercial
 - deepinfomercial
 - torch
 - noboard 
