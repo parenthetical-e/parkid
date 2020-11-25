@@ -26,7 +26,8 @@ from parkid.gym.bandit import BanditChange121
 def parkid(num_episodes=1000,
            change=100,
            tie_break='next',
-           boredom=0.0,
+           par_boredom=0.0,
+           kid_boredom=0.0,
            share=0.0,
            set_point=None,
            lr_R=.1,
@@ -66,11 +67,11 @@ def parkid(num_episodes=1000,
     par_wsls = WSLS(
         actor_E=DeterministicActor(num_actions,
                                    tie_break=tie_break,
-                                   boredom=boredom),
+                                   boredom=par_boredom),
         critic_E=Critic(num_actions, default_value=E_0),
         actor_R=DeterministicActor(num_actions,
                                    tie_break='first',
-                                   boredom=boredom),
+                                   boredom=par_boredom),
         critic_R=Critic(num_actions, default_value=R_0),
     )
     par_memories = [
@@ -81,11 +82,11 @@ def parkid(num_episodes=1000,
     kid_wsls = WSLSh(
         actor_E=DeterministicActor(num_actions,
                                    tie_break=tie_break,
-                                   boredom=boredom),
+                                   boredom=kid_boredom),
         critic_E=Critic(num_actions, default_value=E_0),
         actor_R=DeterministicActor(num_actions,
                                    tie_break='first',
-                                   boredom=boredom),
+                                   boredom=kid_boredom),
         critic_R=Critic(num_actions, default_value=R_0),
     )
     kid_memories = [
