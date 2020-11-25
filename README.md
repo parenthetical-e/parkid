@@ -1,5 +1,5 @@
 # parkid
-Simulate parents, kids, and many dependent agents. A development inspired approach to multi-agent RL.
+Simulate parents, kids, and many dependent agents. A development inspired multi-agent RL.
 
 # install
 TODO
