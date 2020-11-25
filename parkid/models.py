@@ -4,6 +4,70 @@ from scipy.special import softmax
 from collections import OrderedDict
 
 
+def R_update(state, reward, critic, lr):
+    """Really simple TD learning"""
+
+    update = lr * (reward - critic(state))
+    critic.update(state, update)
+
+    return critic
+
+
+def E_update(state, value, critic, lr):
+    """Bellman update"""
+    update = lr * value
+    critic.replace(state, update)
+
+    return critic
+
+
+class WSLS:
+    """Win-stay lose-switch policy control"""
+    def __init__(self, actor_E, critic_E, actor_R, critic_R, boredom=0.0):
+        self.actor_R = actor_R
+        self.critic_R = critic_R
+        self.actor_E = actor_E
+        self.critic_E = critic_E
+        self.boredom = boredom
+
+    def __call__(self, E, R):
+        self.forward(E, R)
+
+    def update(self, action, E, R, lr_R):
+        self.critic_R = R_update(action, R, self.critic_R, lr_R)
+        self.critic_E = E_update(action, E, self.critic_E, lr=1)
+
+    def forward(self, E, R):
+        if (E - self.boredom) > R:
+            critic = self.critic_E
+            actor = self.actor_E
+            policy = 0
+        else:
+            critic = self.critic_R
+            actor = self.actor_R
+            policy = 1
+
+        return actor, critic, policy
+
+
+class WSLSh(WSLS):
+    """Win-stay lose-switch policy control (for homeostatic R)"""
+    def __init__(self, actor_E, critic_E, actor_R, critic_R, boredom=0.0):
+        super().__init__(actor_E, critic_E, actor_R, critic_R, boredom=boredom)
+
+    def forward(self, E, R):
+        if (E - self.boredom) >= R:
+            self.critic = self.critic_E
+            self.actor = self.actor_E
+            policy = 0
+        else:
+            self.critic = self.critic_R
+            self.actor = self.actor_R
+            policy = 1
+
+        return self.actor, self.critic, policy
+
+
 class Critic:
     def __init__(self, num_inputs, default_value):
         self.num_inputs = num_inputs
