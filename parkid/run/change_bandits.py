@@ -61,6 +61,10 @@ def parkid(num_episodes=1000,
     # Init values
     R_0 = 0
     E_0 = entropy(np.ones(num_actions) / num_actions)
+    par_E = E_0
+    par_R = R_0
+    kid_E = E_0
+    kid_R = R_0
 
     # Init agents and memories
     # PAR
@@ -211,8 +215,9 @@ def parkid(num_episodes=1000,
                   total_G=total_G,
                   lr_R=lr_R,
                   master_seed=master_seed)
-
     save_checkpoint(result, filename=os.path.join(log.log_dir, "result.pkl"))
+
+    return total_R
 
 
 if __name__ == "__main__":
