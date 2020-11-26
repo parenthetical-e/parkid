@@ -31,7 +31,7 @@ class WSLS:
         self.boredom = boredom
 
     def __call__(self, E, R):
-        self.forward(E, R)
+        return self.forward(E, R)
 
     def update(self, action, E, R, lr_R):
         self.critic_R = R_update(action, R, self.critic_R, lr_R)
