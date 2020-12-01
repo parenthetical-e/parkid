@@ -69,15 +69,16 @@ rm(tmp, agent_names, agent_name, E_bias, exp_name, exp_names, file_names, i)
 ```
 
 # Rewards
-```{r, fig.width=1, fig.height=1}
+```{r, fig.width=0.8, fig.height=1}
 results %>% 
   group_by(agent, run) %>% 
   summarise(total_R=last(total_R),
-            total_G=last(total_G)) -> tmp
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
 
 tmp %>% 
   ggplot(aes(x=agent, y=total_R/num_episodes)) +
-  geom_jitter(width=0.1) +
+  geom_jitter(width=0.2, size=1) +
   theme_classic2() +
   labs(x="", y="Reward")
 ```
