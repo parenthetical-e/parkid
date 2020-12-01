@@ -45,8 +45,8 @@ def parkid(num_episodes=1000,
 
     # ------------------------------------------------------------------------
     # Init tasks
-    env1 = BanditUniform121()
-    env2 = BanditChange121()
+    env1 = BanditUniform121(p_min=0.1, p_max=0.3, p_best=0.9, best=54)
+    env2 = BanditChange121(p_min=0.1, p_max=0.3, p_best=0.9, org_best=54)
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
@@ -140,15 +140,16 @@ def parkid(num_episodes=1000,
         # Share and learn
         par_R = par_R * (1 - share)
         kid_R += par_R * share
+        par_E += kid_E
 
         # PAR
         old = deepcopy(par_memories[par_action])
         par_memories[par_action].update((int(par_state), int(par_R)))
         new = deepcopy(par_memories[par_action])
         par_E = kl(new, old, E_0)
-        old = deepcopy(par_memories[par_action])
+        old = deepcopy(par_memories[kid_action])
         par_memories[kid_action].update((int(kid_state), int(kid_R)))
-        new = deepcopy(par_memories[par_action])
+        new = deepcopy(par_memories[kid_action])
         par_E += kl(new, old, E_0)  # note inplace
 
         # KID
@@ -157,7 +158,7 @@ def parkid(num_episodes=1000,
         new = deepcopy(kid_memories[kid_action])
         kid_E = kl(new, old, E_0)
         old = deepcopy(kid_memories[par_action])
-        kid_memories[par_action].update((int(par_state), int(kid_R)))
+        kid_memories[par_action].update((int(par_state), int(par_R)))
         new = deepcopy(kid_memories[par_action])
         kid_E += kl(new, old, E_0)  # note inplace
 
@@ -239,8 +240,8 @@ def par(num_episodes=1000,
 
     # ------------------------------------------------------------------------
     # Init tasks
-    env1 = BanditUniform121()
-    env2 = BanditChange121()
+    env1 = BanditUniform121(p_min=0.1, p_max=0.3, p_best=0.9, best=54)
+    env2 = BanditChange121(p_min=0.1, p_max=0.3, p_best=0.9, org_best=54)
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
