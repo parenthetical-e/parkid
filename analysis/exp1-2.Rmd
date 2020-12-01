@@ -40,21 +40,30 @@ num_arms <- 121
 run_codes <- 1:10
 exp_names <- c("exp1", "exp2")
 agent_names <- c("Parkid", "Par")
-file_names <- c("par_action", "par_policy", "kid_action", "kid_policy", "total_R", "total_G")
+file_names <-
+  c(
+    "par_action",
+    "par_policy",
+    "kid_action",
+    "kid_policy",
+    "total_R",
+    "change_R",
+    "total_G"
+  )
 
 # Init
-E_bias <- log(num_arms) * num_arms 
+E_bias <- log(num_arms) * num_arms
 
 # !
 results <- NULL
-for(i in 1:length(exp_names)){
+for (i in 1:length(exp_names)) {
   exp_name <- exp_names[i]
   agent_name <- agent_names[i]
-
-  tmp <- load_result(exp_name, run_codes, file_names, 
-                     n_max=num_episodes+1)
   
-  tmp %>% 
+  tmp <- load_result(exp_name, run_codes, file_names,
+                     n_max = num_episodes + 1)
+  
+  tmp %>%
     filter(global_step <= num_episodes) -> tmp
   tmp$exp <- exp_name
   tmp$agent <- agent_name
@@ -65,22 +74,38 @@ for(i in 1:length(exp_names)){
 }
 
 # clean
-rm(tmp, agent_names, agent_name, E_bias, exp_name, exp_names, file_names, i)
+rm(tmp,
+   agent_names,
+   agent_name,
+   E_bias,
+   exp_name,
+   exp_names,
+   file_names,
+   i)
 ```
 
 # Rewards
-```{r, fig.width=0.8, fig.height=1}
+```{r, fig.width=1.6, fig.height=1}
 results %>% 
-  group_by(agent, run) %>% 
+  group_by(agent, run, exp) %>% 
   summarise(total_R=last(total_R),
+            change_R=last(change_R),
             total_G=last(total_G)) %>% 
   ungroup() -> tmp
 
 tmp %>% 
-  ggplot(aes(x=agent, y=total_R/num_episodes)) +
+  ggplot(aes(x=agent, y=total_R)) +
   geom_jitter(width=0.2, size=1) +
   theme_classic2() +
-  labs(x="", y="Reward")
+  labs(x="", y="Reward", title="Total") -> p1
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_jitter(width=0.2, size=1) +
+  theme_classic2() +
+  labs(x="", y="", title="After")-> p2
+
+p1 + p2
 ```
 # Actions
 ## Exp 1
