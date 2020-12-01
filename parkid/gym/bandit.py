@@ -115,7 +115,7 @@ class BanditChange121(BanditUniform121):
 
         # Make the best the worst
         self.original_best = deepcopy(self.best)
-        self.p_dist[self.original_best[0]] = 0.1
+        self.p_dist[self.original_best[0]] = self.p_min
 
         # Now update the best
         self.best = [np.argmax(self.p_dist)]
@@ -123,7 +123,7 @@ class BanditChange121(BanditUniform121):
     def seed(self, seed=None):
         super().seed(seed)
         self.original_best = deepcopy(self.best)
-        self.p_dist[self.original_best[0]] = 0.1
+        self.p_dist[self.original_best[0]] = self.p_min
         self.best = [np.argmax(self.p_dist)]
 
         return [seed]
