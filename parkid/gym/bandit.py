@@ -132,6 +132,9 @@ class BanditChange4(BanditEnv):
         BanditEnv.__init__(self, p_dist=self.p_dist, r_dist=self.r_dist)
 
     def seed(self, seed=None):
+        # Set
+        self.np_random, seed = seeding.np_random(seed)
+
         # Build p_dist from seed
         self.orginal.seed(seed)
         self.p_dist = deepcopy(self.orginal.p_dist)
