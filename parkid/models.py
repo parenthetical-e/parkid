@@ -57,15 +57,15 @@ class WSLSh(WSLS):
 
     def forward(self, E, R):
         if (E - self.boredom) >= R:
-            self.critic = self.critic_E
-            self.actor = self.actor_E
+            critic = self.critic_E
+            actor = self.actor_E
             policy = 0
         else:
-            self.critic = self.critic_R
-            self.actor = self.actor_R
+            critic = self.critic_R
+            actor = self.actor_R
             policy = 1
 
-        return self.actor, self.critic, policy
+        return actor, critic, policy
 
 
 class Critic:
