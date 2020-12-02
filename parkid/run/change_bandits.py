@@ -21,6 +21,8 @@ from parkid.models import WSLS
 from parkid.models import WSLSh
 from parkid.gym.bandit import BanditUniform121
 from parkid.gym.bandit import BanditChange121
+from parkid.gym.bandit import BanditUniform4
+from parkid.gym.bandit import BanditChange4
 
 
 def parkid(num_episodes=1000,
@@ -45,8 +47,8 @@ def parkid(num_episodes=1000,
 
     # ------------------------------------------------------------------------
     # Init tasks
-    env1 = BanditUniform121()
-    env2 = BanditChange121()
+    env1 = BanditUniform4()
+    env2 = BanditChange4()
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
@@ -111,6 +113,8 @@ def parkid(num_episodes=1000,
             env = env1
         else:
             env = env2
+            import ipdb
+            ipdb.set_trace()
         env.reset()
 
         # ---
@@ -138,30 +142,30 @@ def parkid(num_episodes=1000,
         kid_R = R_homeostasis(kid_R, total_R, set_point)
 
         # ---
-        # Share and learn
-        par_R = par_R * (1 - share)
-        kid_R += par_R * share
-        par_E += kid_E
-
         # PAR
         old = deepcopy(par_memories[par_action])
         par_memories[par_action].update((int(par_state), int(par_R)))
         new = deepcopy(par_memories[par_action])
         par_E = kl(new, old, E_0)
-        old = deepcopy(par_memories[kid_action])
-        par_memories[kid_action].update((int(kid_state), int(kid_R)))
-        new = deepcopy(par_memories[kid_action])
-        par_E += kl(new, old, E_0)  # note inplace
+        # old = deepcopy(par_memories[kid_action])
+        # par_memories[kid_action].update((int(kid_state), int(kid_R)))
+        # new = deepcopy(par_memories[kid_action])
+        # par_E += kl(new, old, E_0)  # note inplace
 
         # KID
         old = deepcopy(kid_memories[kid_action])
         kid_memories[kid_action].update((int(kid_state), int(kid_R)))
         new = deepcopy(kid_memories[kid_action])
         kid_E = kl(new, old, E_0)
-        old = deepcopy(kid_memories[par_action])
-        kid_memories[par_action].update((int(par_state), int(par_R)))
-        new = deepcopy(kid_memories[par_action])
-        kid_E += kl(new, old, E_0)  # note inplace
+        # old = deepcopy(kid_memories[par_action])
+        # kid_memories[par_action].update((int(par_state), int(par_R)))
+        # new = deepcopy(kid_memories[par_action])
+        # kid_E += kl(new, old, E_0)  # note inplace
+
+        # Share
+        par_R = par_R * (1 - share)
+        kid_R += par_R * share
+        par_E += kid_E
 
         # Learning, both policies.
         par_wsls.update(par_action, par_E, par_R, lr_R)
@@ -188,7 +192,7 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
         total_E += par_E + kid_E
-        total_R += par_R + kid_R
+        total_R += par_R  #+ kid_R
         total_G += par_G + kid_G
         if n < change:
             change_R += par_R + kid_R
@@ -247,8 +251,8 @@ def par(num_episodes=1000,
 
     # ------------------------------------------------------------------------
     # Init tasks
-    env1 = BanditUniform121()
-    env2 = BanditChange121()
+    env1 = BanditUniform4()
+    env2 = BanditChange4()
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
@@ -374,7 +378,7 @@ def par(num_episodes=1000,
         log.add_scalar("alt_value_E", alt_wsls.critic_E(alt_action), n)
         log.add_scalar("alt_value_R", alt_wsls.critic_R(alt_action), n)
         total_E += par_E + alt_E
-        total_R += par_R + alt_R
+        total_R += par_R  #+ alt_R
         total_G += par_G + alt_G
         if n < change:
             change_R += par_R + alt_R
