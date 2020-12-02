@@ -79,13 +79,14 @@ def parkid(num_episodes=1000,
                                    tie_break='first',
                                    boredom=par_boredom),
         critic_R=Critic(num_actions, default_value=R_0),
+        boredom=par_boredom,
     )
     par_memories = [
         DiscreteDistribution(initial_bins=initial_bins)
         for _ in range(num_actions)
     ]
     # KID
-    kid_wsls = WSLSh(
+    kid_wsls = WSLS(
         actor_E=DeterministicActor(num_actions,
                                    tie_break=tie_break,
                                    boredom=kid_boredom),
@@ -94,6 +95,7 @@ def parkid(num_episodes=1000,
                                    tie_break='first',
                                    boredom=kid_boredom),
         critic_R=Critic(num_actions, default_value=R_0),
+        boredom=kid_boredom,
     )
     kid_memories = [
         DiscreteDistribution(initial_bins=initial_bins)
@@ -119,25 +121,19 @@ def parkid(num_episodes=1000,
         # PAR move (always first)
         actor, critic, par_policy = par_wsls(par_E, par_R)
         par_action = actor(list(critic.model.values()))
-
-        # Est. regret and save it
-        par_G = estimate_regret(all_actions, par_action, critic)
-
-        # Pull a lever.
         par_state, par_R, _, _ = env.step(par_action)
+
         par_R = R_homeostasis(par_R, total_R, num_episodes)
+        par_G = estimate_regret(all_actions, par_action, critic)
 
         # ---
         # KID move
         actor, critic, kid_policy = kid_wsls(kid_E, kid_R)
         kid_action = actor(list(critic.model.values()))
-
-        # Est. regret and save it
-        kid_G = estimate_regret(all_actions, kid_action, critic)
-
-        # Pull a lever.
         kid_state, kid_R, _, _ = env.step(kid_action)
+
         kid_R = R_homeostasis(kid_R, total_R, set_point)
+        kid_G = estimate_regret(all_actions, kid_action, critic)
 
         # ---
         # PAR
@@ -269,31 +265,29 @@ def par(num_episodes=1000,
 
     # Init agents and memories
     # PAR
-    par_wsls = WSLS(
-        actor_E=DeterministicActor(num_actions,
-                                   tie_break=tie_break,
-                                   boredom=par_boredom),
-        critic_E=Critic(num_actions, default_value=E_0),
-        actor_R=DeterministicActor(num_actions,
-                                   tie_break='first',
-                                   boredom=par_boredom),
-        critic_R=Critic(num_actions, default_value=R_0),
-    )
+    par_wsls = WSLS(actor_E=DeterministicActor(num_actions,
+                                               tie_break=tie_break,
+                                               boredom=par_boredom),
+                    critic_E=Critic(num_actions, default_value=E_0),
+                    actor_R=DeterministicActor(num_actions,
+                                               tie_break='first',
+                                               boredom=par_boredom),
+                    critic_R=Critic(num_actions, default_value=R_0),
+                    boredom=par_boredom)
     par_memories = [
         DiscreteDistribution(initial_bins=initial_bins)
         for _ in range(num_actions)
     ]
     # ALT
-    alt_wsls = WSLS(
-        actor_E=DeterministicActor(num_actions,
-                                   tie_break=tie_break,
-                                   boredom=alt_boredom),
-        critic_E=Critic(num_actions, default_value=E_0),
-        actor_R=DeterministicActor(num_actions,
-                                   tie_break='first',
-                                   boredom=alt_boredom),
-        critic_R=Critic(num_actions, default_value=R_0),
-    )
+    alt_wsls = WSLS(actor_E=DeterministicActor(num_actions,
+                                               tie_break=tie_break,
+                                               boredom=alt_boredom),
+                    critic_E=Critic(num_actions, default_value=E_0),
+                    actor_R=DeterministicActor(num_actions,
+                                               tie_break='first',
+                                               boredom=alt_boredom),
+                    critic_R=Critic(num_actions, default_value=R_0),
+                    boredom=alt_boredom)
     alt_memories = [
         DiscreteDistribution(initial_bins=initial_bins)
         for _ in range(num_actions)
