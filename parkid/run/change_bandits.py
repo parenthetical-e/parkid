@@ -113,8 +113,6 @@ def parkid(num_episodes=1000,
             env = env1
         else:
             env = env2
-            import ipdb
-            ipdb.set_trace()
         env.reset()
 
         # ---
