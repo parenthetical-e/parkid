@@ -34,7 +34,6 @@ def parkid(num_episodes=1000,
            set_point=None,
            lr_R=.1,
            master_seed=42,
-           initial_bins=None,
            log_dir=None):
     """Parents and kids play a game of changing bandits"""
 
@@ -67,6 +66,7 @@ def parkid(num_episodes=1000,
     par_R = R_0
     kid_E = E_0
     kid_R = R_0
+    initial_bins = [0, 1]
 
     # Init agents and memories
     # PAR
@@ -86,7 +86,7 @@ def parkid(num_episodes=1000,
         for _ in range(num_actions)
     ]
     # KID
-    kid_wsls = WSLS(
+    kid_wsls = WSLSh(
         actor_E=DeterministicActor(num_actions,
                                    tie_break=tie_break,
                                    boredom=kid_boredom),
@@ -186,7 +186,7 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
         total_E += par_E + kid_E
-        total_R += par_R  #+ kid_R
+        total_R += par_R + kid_R
         total_G += par_G + kid_G
         if n < change:
             change_R += par_R + kid_R
@@ -232,7 +232,6 @@ def par(num_episodes=1000,
         share=0.0,
         lr_R=.1,
         master_seed=42,
-        initial_bins=None,
         log_dir=None):
     """Parents and kids play a game of changing bandits"""
 
@@ -262,6 +261,7 @@ def par(num_episodes=1000,
     alt_E = E_0
     alt_R = R_0
     alt_boredom = par_boredom
+    initial_bins = [0, 1]
 
     # Init agents and memories
     # PAR
@@ -370,7 +370,7 @@ def par(num_episodes=1000,
         log.add_scalar("alt_value_E", alt_wsls.critic_E(alt_action), n)
         log.add_scalar("alt_value_R", alt_wsls.critic_R(alt_action), n)
         total_E += par_E + alt_E
-        total_R += par_R  #+ alt_R
+        total_R += par_R + alt_R
         total_G += par_G + alt_G
         if n < change:
             change_R += par_R + alt_R
