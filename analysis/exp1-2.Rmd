@@ -33,22 +33,26 @@ data_path <- "~/Code/parkid/data/"
 # -------------------------------------------------------------
 # User def
 task_name <- "change_bandits"
-num_episodes <- 1210 * 4
-run_codes <- 1:10
-num_arms <- 121
+num_episodes <- 180
+run_codes <- 1:20
+num_arms <- 4
 
-run_codes <- 1:10
 exp_names <- c("exp1", "exp2")
 agent_names <- c("Parkid", "Par")
 file_names <-
   c(
     "par_action",
     "par_policy",
+    "alt_action",
+    "alt_policy",
     "kid_action",
     "kid_policy",
+    "par_score_E",
     "total_R",
     "change_R",
-    "total_G"
+    "total_G",
+    'best',
+    'p_opt'
   )
 
 # Init
@@ -57,19 +61,17 @@ E_bias <- log(num_arms) * num_arms
 # !
 results <- NULL
 for (i in 1:length(exp_names)) {
+  # Load
   exp_name <- exp_names[i]
   agent_name <- agent_names[i]
-  
   tmp <- load_result(exp_name, run_codes, file_names,
                      n_max = num_episodes + 1)
-  
-  tmp %>%
-    filter(global_step <= num_episodes) -> tmp
+  # Add metadata
   tmp$exp <- exp_name
   tmp$agent <- agent_name
   tmp$task <- task_name
   tmp$num_episodes <- num_episodes
-  
+  # Join
   results <- bind_rows(results, tmp)
 }
 
@@ -87,7 +89,7 @@ rm(tmp,
 # Rewards
 ```{r, fig.width=1.6, fig.height=1}
 results %>% 
-  group_by(agent, run, exp) %>% 
+  group_by(agent, exp, run) %>% 
   summarise(total_R=last(total_R),
             change_R=last(change_R),
             total_G=last(total_G)) %>% 
@@ -95,39 +97,129 @@ results %>%
 
 tmp %>% 
   ggplot(aes(x=agent, y=total_R)) +
-  geom_jitter(width=0.2, size=1) +
+  geom_boxplot(width=0.4) +
   theme_classic2() +
-  labs(x="", y="Reward", title="Total") -> p1
+  labs(x="", y="Rewards", title="Total") -> p1
 
 tmp %>% 
   ggplot(aes(x=agent, y=change_R)) +
-  geom_jitter(width=0.2, size=1) +
+  geom_boxplot(width=0.4) +
   theme_classic2() +
-  labs(x="", y="", title="After")-> p2
+  labs(x="", y="Rewards", title="After")-> p2
 
 p1 + p2
 ```
-# Actions
-## Exp 1
-```{r, fig.width=4, fig.height=4}
+```{r, fig.width=2.6, fig.height=1}
 results %>% 
   filter(exp == "exp1") %>% 
-  ggplot(aes(x=global_step, y=par_action, color=factor(par_policy))) +
-  geom_point() +
-  facet_wrap(run~.) +
+  filter(global_step > 20) %>% 
+  ggplot(aes(x=global_step, y=total_R /2 / global_step, group=run)) +
+  geom_line(width=0.2) +
+  geom_line(aes(x=global_step, y=p_opt), color="red") +
+  theme_classic2() +
+  # lims(y=c(0, 1)) +
+  labs(x="Episodes", y="Reward", title="Parkid") -> p1
+
+results %>% 
+  filter(exp == "exp2") %>% 
+  filter(global_step > 20) %>% 
+  ggplot(aes(x=global_step, y=total_R /2/ global_step, group=run)) +
+  geom_line(aes(x=global_step, y=p_opt), color="red") +
+  geom_line(width=0.2) +
+  theme_classic2() +
+  # lims(y=c(0, 1)) +
+  labs(x="Episodes", y="Reward", title="Par") -> p2
+
+p1 + p2
+```
+# Info
+```{r, fig.width=2, fig.height=2}
+results %>% 
+  filter(exp == "exp1") %>% 
+  filter(global_step > 20) %>% 
+  ggplot(aes(x=global_step, y=par_score_E*10, group=run)) +
+  geom_point(size=0.6, alpha=0.6, color="orchid4") +
+  geom_line(size=0.6, alpha=0.6, color="orchid4") +
+  theme_classic2() +
+  lims(y=c(0, 1)) +
+  labs(x="Episodes", y="Info. value", title="Parkid") -> p1
+
+results %>% 
+  filter(exp == "exp2") %>% 
+  filter(global_step > 20) %>% 
+  ggplot(aes(x=global_step, y=par_score_E*10, group=run)) +
+  geom_point(size=0.6, alpha=0.6, color="orchid4") +
+  geom_line(size=0.6, alpha=0.6, color="orchid4") +
+  theme_classic2() +
+  lims(y=c(0, 1)) +
+  labs(x="Episodes", y="Info. value", title="Par") -> p2
+
+p1 / p2
+```
+
+# Actions
+## Exp 1-2 (par only)
+```{r, fig.width=2, fig.height=3.5}
+results %>% 
+  filter(exp == "exp1") %>% 
+  ggplot(aes(x=global_step, y=par_action + 1)) +
+  geom_point(alpha=0.8, size=0.6) +
+  geom_line(aes(x=global_step, y=best + 1), color="red") +
+  facet_wrap(run~., ncol=1) +
+  scale_y_continuous(limits=c(0.9, num_arms+.1), breaks = c(1, 4)) +
+  theme(panel.spacing = unit(.2, "lines")) +
   theme_classic2() +
   theme(
     strip.background = element_blank(),
     strip.text.x = element_blank()
+  ) +
+  labs(x="Episode", y="Choice", title="Parkid") -> p1
+
+results %>% 
+  filter(exp == "exp2") %>% 
+  ggplot(aes(x=global_step, y=par_action + 1)) +
+  geom_point(alpha=0.8, size=0.6) +
+  geom_line(aes(x=global_step, y=best + 1), color="red") +
+  facet_wrap(run~., ncol=1) +
+  scale_y_continuous(limits=c(0.9, num_arms+.1), breaks = c(1, 4)) +
+  theme(panel.spacing = unit(.2, "lines")) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  ) +
+  labs(x="Episode", y="Choice", title="Par") -> p2
+
+p1 + p2
+```
+
+## Exp 1 - par and kid seperate
+```{r, fig.width=2, fig.height=3.5}
+results %>% 
+  filter(exp == "exp1") %>% 
+  ggplot(aes(x=global_step, y=par_action + 1, color=factor(par_policy))) +
+  geom_point(alpha=0.8, size=0.6) +
+  geom_line(aes(x=global_step, y=best + 1), color="red") +
+  facet_wrap(run~., ncol=1) +
+  scale_y_continuous(limits=c(0.9, num_arms+.1), breaks = c(1, 4)) +
+  theme(panel.spacing = unit(.2, "lines")) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    legend.position = "none"
   ) +
   scale_colour_manual("Policy", values=c("orchid4", "grey1")) +
   labs(x="Episode", y="Choice", title="Par") -> p1
 
 results %>% 
   filter(exp == "exp1") %>% 
-  ggplot(aes(x=global_step, y=kid_action, color=factor(kid_policy))) +
-  geom_point() +
-  facet_wrap(run~.) +
+  ggplot(aes(x=global_step, y=kid_action + 1, color=factor(kid_policy))) +
+  geom_point(alpha=0.8, size=0.6) +
+  geom_line(aes(x=global_step, y=best + 1), color="red") +
+  facet_wrap(run~., ncol=1) +
+  scale_y_continuous(limits=c(0.9, num_arms+.1), breaks = c(1, 4)) +
+  theme(panel.spacing = unit(.2, "lines")) +
   theme_classic2() +
   theme(
     strip.background = element_blank(),
@@ -136,37 +228,5 @@ results %>%
   scale_colour_manual("Policy", values=c("orchid4", "grey1")) +
   labs(x="Episode", y="Choice", title="Kid") -> p2
 
-p1 / p2
-```
-
-## Exp 1 v 2
-```{r, fig.width=4, fig.height=4}
-results %>% 
-  filter(exp == "exp1") %>% 
-  ggplot(aes(x=global_step, y=par_action, color=factor(par_policy))) +
-  geom_point() +
-  facet_wrap(run~.) +
-  theme_classic2() +
-  theme(
-    strip.background = element_blank(),
-    strip.text.x = element_blank()
-  ) +
-  scale_colour_manual("Policy", values=c("orchid4", "grey1")) +
-  lims(x=c(1, num_episodes)) +
-  labs(x="Episode", y="Choice", title="Exp 1 - par") -> p1
-
-results %>% 
-  filter(exp == "exp2") %>% 
-  ggplot(aes(x=global_step, y=par_action, color=factor(par_policy))) +
-  geom_point() +
-  facet_wrap(run~.) +
-  theme_classic2() +
-  theme(
-    strip.background = element_blank(),
-    strip.text.x = element_blank()
-  ) +
-  scale_colour_manual("Policy", values=c("orchid4", "grey1")) +
-  labs(x="Episode", y="Choice", title="Exp 2 - par") -> p2
-
-p1 / p2
+p1 + p2
 ```
