@@ -21,5 +21,5 @@ exp2:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp2.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py par --num_episodes=120  --change=60 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/exp2/run{1} --master_seed={1}' ::: {0..20} 
+			'python parkid/run/change_bandits.py twopar --num_episodes=120  --change=60 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/exp2/run{1} --master_seed={1}' ::: {0..20} 
 			
