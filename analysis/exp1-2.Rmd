@@ -25,6 +25,8 @@ source("utils.R")
 
 # --- Main path to all data ---
 data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/exp1-2/"
+dir.create(img_path)
 ```
 
 # Fig. Exploration 
@@ -38,7 +40,7 @@ run_codes <- 1:20
 num_arms <- 4
 
 exp_names <- c("exp1", "exp2")
-agent_names <- c("Parkid", "Par")
+agent_names <- c("Parkid", "2Par")
 file_names <-
   c(
     "par_action",
@@ -107,7 +109,10 @@ tmp %>%
   theme_classic2() +
   labs(x="", y="Total reward (R)", title="After")-> p2
 
-p1 + p2
+p <- p1 + p2
+name <- paste(img_path, "total_R", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
 ```
 ```{r, fig.width=2.6, fig.height=1}
 results %>% 
@@ -130,9 +135,12 @@ results %>%
   geom_line(aes(x=global_step, y=p_opt), color="red", linetype = "dashed") +
   theme_classic2() +
   # lims(y=c(0, 1)) +
-  labs(x="Episodes", y="Reward", title="Par") -> p2
+  labs(x="Episodes", y="Reward", title="2Par") -> p2
 
-p1 + p2
+p <- p1 + p2
+name <- paste(img_path, "time_R", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 2.6*2, height = 1*2)
+print(p)
 ```
 # Info
 ```{r, fig.width=2, fig.height=2}
@@ -154,14 +162,17 @@ results %>%
   geom_line(size=0.6, alpha=0.6, color="dodgerblue3") +
   theme_classic2() +
   lims(y=c(0, 1)) +
-  labs(x="Episodes", y="Info. value (E)", title="Par") -> p2
+  labs(x="Episodes", y="Info. value (E)", title="2Par (single)") -> p2
 
-p1 / p2
+p <- p1 / p2
+name <- paste(img_path, "time_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 2*2, height = 2*2)
+print(p)
 ```
 
 # Actions
 ## Exp 1-2 (par only)
-```{r, fig.width=2, fig.height=3.5}
+```{r, fig.width=1, fig.height=3.5}
 results %>% 
   filter(exp == "exp1") %>% 
   ggplot(aes(x=global_step, y=par_action + 1)) +
@@ -190,9 +201,12 @@ results %>%
     strip.background = element_blank(),
     strip.text.x = element_blank()
   ) +
-  labs(x="Episode", y="Arm", title="Par") -> p2
+  labs(x="Episode", y="Arm", title="2Par (single)") -> p2
 
-p1 + p2
+p <- p2
+name <- paste(img_path, "behave_par", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1*2, height = 3.5*2)
+print(p)
 ```
 
 ## Exp 1 - par and kid seperate
@@ -232,5 +246,8 @@ results %>%
   # scale_colour_manual("Policy", values=c("orchid4", "grey1")) +
   labs(x="Episode", y="Arm", title="Kid") -> p2
 
-p1 + p2
+p <- p1 + p2
+name <- paste(img_path, "behave_parkid", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 2*2, height = 3.5*2)
+print(p)
 ```
