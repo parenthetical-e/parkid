@@ -22,8 +22,10 @@ options(scipen=1000000)
 
 # Load load_result and other helpful functions
 source("utils.R")
+```
 
-# --- Main path to all data ---
+# Paths
+```{r, message=FALSE}
 data_path <- "~/Code/parkid/data/"
 img_path <- "~/Code/parkid/analysis/img/exp1-2/"
 dir.create(img_path)
