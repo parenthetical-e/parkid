@@ -1,0 +1,121 @@
+---
+title: "Task payouts - illustration"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(ggplot2)
+library(ggpubr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+
+# --- Main path to all data ---
+data_path <- "/Volumes/Data/infomercial/data"
+```
+
+# Task 1 
+## orignal
+```{r, fig.width=1.2, fig.height=0.6}
+best <- 3
+best_choice = rep(0, 4)
+best_choice[best] <- 1
+
+classic <- data.frame(
+  best=best_choice,
+  choice=1:4,
+  payout=c(0.22, 0.23, 0.6, 0.11))
+
+# Result
+classic %>% 
+  ggplot(aes(x=1, y=payout, fill=factor(best))) + 
+  geom_bar(width=0.5, alpha=1, stat="identity") +
+  lims(x=c(0, 2)) +
+  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_fill_manual(values=c("darkgrey", "black")) +
+  labs(x="Choice", y="", title="Reward payout") +
+  facet_wrap(choice~., nrow=1) +
+  theme_pubr(base_size = 6, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text.x = element_blank()) +
+  # theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.x = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p1
+
+
+# ------------------------------------------------------------------------
+# task1 <- (p1 + plot_spacer() + plot_spacer()) + 
+  # plot_layout(widths=c(0.3, 0.3, 0.3)) +
+task2 <- (p1) +
+  plot_annotation(title = "Task 1 (original)")
+print(task2)
+
+# save
+name <- "img/task1a"
+ggsave(paste(name, ".pdf", sep=""), plot=task2, width = 1.2*2, height = 0.6*2)
+
+rm(p1)
+```
+
+## change
+```{r, fig.width=1.2, fig.height=0.6}
+best <- 4
+best_choice = rep(0, 4)
+best_choice[best] <- 1
+
+classic <- data.frame(
+  best=best_choice,
+  choice=1:4,
+  payout=c(0.22, 0.23, 0.6, 0.99))
+
+# Result
+classic %>% 
+  ggplot(aes(x=1, y=payout, fill=factor(best))) + 
+  geom_bar(width=0.5, alpha=1, stat="identity") +
+  lims(x=c(0, 2)) +
+  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_fill_manual(values=c("darkgrey", "black")) +
+  labs(x="Choice", y="", title="Reward payout") +
+  facet_wrap(choice~., nrow=1) +
+  theme_pubr(base_size = 6, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text.x = element_blank()) +
+  # theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.x = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p1
+
+
+# ------------------------------------------------------------------------
+# task1 <- (p1 + plot_spacer() + plot_spacer()) + 
+  # plot_layout(widths=c(0.3, 0.3, 0.3)) +
+task2 <- (p1) +
+  plot_annotation(title = "Task 1 (change)")
+print(task2)
+
+# save
+name <- "img/task1b"
+ggsave(paste(name, ".pdf", sep=""), plot=task2, width = 1.2*2, height = 0.6*2)
+
+rm(p1)
+```
