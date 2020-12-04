@@ -19,20 +19,24 @@ from parkid.models import Critic
 from parkid.models import DeterministicActor
 from parkid.models import WSLS
 from parkid.models import WSLSh
-from parkid.gym.bandit import BanditUniform121
-from parkid.gym.bandit import BanditChange121
-from parkid.gym.bandit import BanditUniform4
-from parkid.gym.bandit import BanditChange4
+from parkid.gym import bandit
+# from parkid.gym.bandit import BanditUniform121
+# from parkid.gym.bandit import BanditChange121
+# from parkid.gym.bandit import BanditUniform4
+# from parkid.gym.bandit import BanditChange4
 
 
 def parkid(num_episodes=1000,
            change=100,
+           env_name1="BanditUniform4",
+           env_name2="BanditChange4",
            tie_break='next',
            par_boredom=0.0,
            kid_boredom=0.0,
            share=0.0,
            set_point=None,
            lr_R=.1,
+           share_update=False,
            master_seed=42,
            log_dir=None):
     """Parents and kids play a game of changing bandits"""
@@ -45,13 +49,16 @@ def parkid(num_episodes=1000,
     log = SummaryWriter(log_dir=log_dir, write_to_disk=True)
 
     # ------------------------------------------------------------------------
-    # Init tasks
-    env1 = BanditUniform4()
-    env2 = BanditChange4()
+    # Init envs
+    Env1 = getattr(bandit, env_name1)
+    Env2 = getattr(bandit, env_name2)
+    env1 = Env1()
+    env2 = Env2()
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
     env2.reset()
+
     num_actions = env1.action_space.n
     all_actions = list(range(num_actions))
 
@@ -118,6 +125,11 @@ def parkid(num_episodes=1000,
         env.reset()
 
         # ---
+        # Share value (sans state) before choosing
+        par_R = par_R * (1 - share)
+        kid_R += par_R * share
+        par_E += kid_E
+
         # PAR move (always first)
         actor, critic, par_policy = par_wsls(par_E, par_R)
         par_action = actor(list(critic.model.values()))
@@ -141,29 +153,21 @@ def parkid(num_episodes=1000,
         par_memories[par_action].update((int(par_state), int(par_R)))
         new = deepcopy(par_memories[par_action])
         par_E = kl(new, old, E_0)
-        # old = deepcopy(par_memories[kid_action])
-        # par_memories[kid_action].update((int(kid_state), int(kid_R)))
-        # new = deepcopy(par_memories[kid_action])
-        # par_E += kl(new, old, E_0)  # note inplace
 
         # KID
         old = deepcopy(kid_memories[kid_action])
         kid_memories[kid_action].update((int(kid_state), int(kid_R)))
         new = deepcopy(kid_memories[kid_action])
         kid_E = kl(new, old, E_0)
-        # old = deepcopy(kid_memories[par_action])
-        # kid_memories[par_action].update((int(par_state), int(par_R)))
-        # new = deepcopy(kid_memories[par_action])
-        # kid_E += kl(new, old, E_0)  # note inplace
-
-        # Share
-        par_R = par_R * (1 - share)
-        kid_R += par_R * share
-        par_E += kid_E
 
         # Learning, both policies.
+        # Direct
         par_wsls.update(par_action, par_E, par_R, lr_R)
         kid_wsls.update(kid_action, kid_E, kid_R, lr_R)
+        # Shared
+        if share_update:
+            par_wsls.update(kid_action, kid_E, None, lr_R)
+            kid_wsls.update(par_action, None, par_R * share, lr_R)
 
         # ---
         # Log
@@ -227,6 +231,8 @@ def parkid(num_episodes=1000,
 
 def twopar(num_episodes=1000,
            change=100,
+           env_name1="BanditUniform4",
+           env_name2="BanditChange4",
            tie_break='next',
            par_boredom=0.0,
            share=0.0,
@@ -243,13 +249,16 @@ def twopar(num_episodes=1000,
     log = SummaryWriter(log_dir=log_dir, write_to_disk=True)
 
     # ------------------------------------------------------------------------
-    # Init tasks
-    env1 = BanditUniform4()
-    env2 = BanditChange4()
+    # Init envs
+    Env1 = getattr(bandit, env_name1)
+    Env2 = getattr(bandit, env_name2)
+    env1 = Env1()
+    env2 = Env2()
     env1.seed(master_seed)
     env2.seed(master_seed)
     env1.reset()
     env2.reset()
+
     num_actions = env1.action_space.n
     all_actions = list(range(num_actions))
 
