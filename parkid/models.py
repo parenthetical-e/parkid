@@ -4,18 +4,18 @@ from scipy.special import softmax
 from collections import OrderedDict
 
 
-def R_update(state, reward, critic, lr):
+def R_update(state, R, critic, lr):
     """Really simple TD learning"""
 
-    update = lr * (reward - critic(state))
+    update = lr * (R - critic(state))
     critic.update(state, update)
 
     return critic
 
 
-def E_update(state, value, critic, lr):
+def E_update(state, E, critic, lr):
     """Bellman update"""
-    update = lr * value
+    update = lr * E
     critic.replace(state, update)
 
     return critic
@@ -34,8 +34,10 @@ class WSLS:
         return self.forward(E, R)
 
     def update(self, action, E, R, lr_R):
-        self.critic_R = R_update(action, R, self.critic_R, lr_R)
-        self.critic_E = E_update(action, E, self.critic_E, lr=1)
+        if R is not None:
+            self.critic_R = R_update(action, R, self.critic_R, lr_R)
+        if E is not None:
+            self.critic_E = E_update(action, E, self.critic_E, lr=1)
 
     def forward(self, E, R):
         if (E - self.boredom) > R:
