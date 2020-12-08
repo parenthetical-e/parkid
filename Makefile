@@ -60,3 +60,40 @@ tune2:
 		--num_processes=4 \
 		--log_space=True \
 		--par_boredom='(1e-4, 1e-1)' 
+
+# --------------------------------------------------------------------------
+# 12-4-20
+# 49c98a8
+#
+# Share updates (but not rewards)
+# 
+# RESULT: 
+
+tune3: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune3 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--share_update=True \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--log_space=True \
+		--par_boredom='(1e-4, 1e-1)' \
+		--kid_boredom='(1e-4, 1e-1)'
+
+tune4: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune4 \
+		--model_name='twopar' \
+		 --env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--share_update=True \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--log_space=True \
+		--par_boredom='(1e-4, 1e-1)' 

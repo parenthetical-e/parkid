@@ -29,6 +29,7 @@ def train(exp_func=None,
           env_name1=None,
           env_name2=None,
           change=None,
+          share_update=None,
           metric=None,
           num_episodes=None,
           num_repeats=None,
@@ -46,6 +47,7 @@ def train(exp_func=None,
             env_name1=env_name1,
             env_name2=env_name2,
             change=change,
+            share_update=share_update,
             num_episodes=num_episodes,
             master_seed=seed,  # override
             **config)
@@ -75,16 +77,17 @@ def random(name,
            env_name2="BanditChange4",
            change=100,
            num_episodes=40,
+           share_update=False,
            num_repeats=10,
            num_samples=10,
            num_processes=1,
+           metric="change_R",
            log_space=False,
            verbose=False,
            master_seed=None,
            **config_kwargs):
     """Tune hyperparameters of any bandit experiment."""
     prng = np.random.RandomState(master_seed)
-    metric = "change_R"  # this is fixed for the parkid api
 
     # -
     # Init:
@@ -110,6 +113,7 @@ def random(name,
                   env_name1=env_name1,
                   env_name2=env_name2,
                   change=change,
+                  share_update=share_update,
                   num_episodes=num_episodes,
                   num_repeats=num_repeats,
                   metric=metric,
