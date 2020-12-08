@@ -38,7 +38,8 @@ def parkid(num_episodes=1000,
            lr_R=.1,
            share_update=False,
            master_seed=42,
-           log_dir=None):
+           log_dir=None,
+           write_to_disk=True):
     """Parents and kids play a game of changing bandits"""
 
     # ------------------------------------------------------------------------
@@ -46,7 +47,7 @@ def parkid(num_episodes=1000,
     if change > num_episodes:
         raise ValueError("change must be less the num_episodes")
     # log
-    log = SummaryWriter(log_dir=log_dir, write_to_disk=True)
+    log = SummaryWriter(log_dir=log_dir, write_to_disk=write_to_disk)
 
     # ------------------------------------------------------------------------
     # Init envs
@@ -221,12 +222,15 @@ def parkid(num_episodes=1000,
                   kid_memories=[m.state_dict() for m in kid_memories],
                   total_E=total_E,
                   total_R=total_R,
+                  change_R=change_R,
                   total_G=total_G,
                   lr_R=lr_R,
                   master_seed=master_seed)
-    save_checkpoint(result, filename=os.path.join(log.log_dir, "result.pkl"))
+    if write_to_disk:
+        save_checkpoint(result,
+                        filename=os.path.join(log.log_dir, "result.pkl"))
 
-    return total_R
+    return {"total_R": total_R, "change_R": change_R}
 
 
 def twopar(num_episodes=1000,
@@ -238,7 +242,8 @@ def twopar(num_episodes=1000,
            share=0.0,
            lr_R=.1,
            master_seed=42,
-           log_dir=None):
+           log_dir=None,
+           write_to_disk=True):
     """Parents and kids play a game of changing bandits"""
 
     # ------------------------------------------------------------------------
@@ -246,7 +251,7 @@ def twopar(num_episodes=1000,
     if change > num_episodes:
         raise ValueError("change must be less the num_episodes")
     # log
-    log = SummaryWriter(log_dir=log_dir, write_to_disk=True)
+    log = SummaryWriter(log_dir=log_dir, write_to_disk=write_to_disk)
 
     # ------------------------------------------------------------------------
     # Init envs
@@ -409,12 +414,15 @@ def twopar(num_episodes=1000,
                   alt_memories=[m.state_dict() for m in alt_memories],
                   total_E=total_E,
                   total_R=total_R,
+                  change_R=change_R,
                   total_G=total_G,
                   lr_R=lr_R,
                   master_seed=master_seed)
-    save_checkpoint(result, filename=os.path.join(log.log_dir, "result.pkl"))
+    if write_to_disk:
+        save_checkpoint(result,
+                        filename=os.path.join(log.log_dir, "result.pkl"))
 
-    return total_R
+    return {"total_R": total_R, "change_R": change_R}
 
 
 if __name__ == "__main__":
