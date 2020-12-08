@@ -26,8 +26,8 @@ exp2:
 			
 
 # --------------------------------------------------------------------------
-# 11-4-20
-# 
+# 12-4-20
+# 49c98a8
 #
 # exp1-2 are cheap to run. Do a random hp search. Let's see how good they can 
 # really do. (Keep lr fixed.
