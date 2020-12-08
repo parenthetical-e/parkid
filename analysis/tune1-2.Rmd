@@ -1,0 +1,72 @@
+---
+title: "Tune 1-2 : parkid versus twopar"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(ggplot2)
+library(tidyr)
+library(ggpubr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/exp1-2/"
+dir.create(img_path)
+```
+# Load
+```{r, message=FALSE}
+# -------------------------------------------------------------
+num_episodes <- 120
+
+# The overestimate due to E0
+num_arms <- 4
+
+rank_names <- c("tune1_sorted.csv",
+                "tune2_sorted.csv")
+agent_names <- c("parkid",
+                 "twopar")
+
+result <- NULL
+for (i in 1:length(rank_names)) {
+  rank_name <- rank_names[i]
+  agent_name <- agent_names[i]
+  
+  tmp <- read_csv(paste(data_path, rank_name, sep = "/"))
+  tmp$exp <- rank_name
+  tmp$agent <- agent_name
+  
+  result <- bind_rows(result, tmp)
+}
+
+result$agent <- factor(result$agent, levels = agent_names)
+```
+
+# Plot ranked
+```{r, fig.width=1.6, fig.height=1}
+result %>% 
+  # filter(index < 100) %>%
+  ggplot(aes(x=index, y=change_R, color=agent)) +
+  geom_point(size=0.6, alpha=0.6) +
+  geom_line(size=0.6, alpha=0.6) +
+  theme_classic2() +
+  scale_color_manual("", values = c("mediumpurple3", "lightsteelblue4")) +
+  labs(x="Rank", y="Reward (R)") 
+```
