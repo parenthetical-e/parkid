@@ -63,10 +63,6 @@ def parkid(num_episodes=1000,
     num_actions = env1.action_space.n
     all_actions = list(range(num_actions))
 
-    # Set the homeostatic R default
-    if set_point is None:
-        set_point = num_episodes
-
     # Init values
     R_0 = 0
     E_0 = entropy(np.ones(num_actions) / num_actions)
@@ -75,6 +71,9 @@ def parkid(num_episodes=1000,
     kid_E = E_0
     kid_R = R_0
     initial_bins = [0, 1]
+
+    if set_point is None:
+        set_point = num_episodes
 
     # Init agents and memories
     # PAR
@@ -113,6 +112,7 @@ def parkid(num_episodes=1000,
     # ------------------------------------------------------------------------
     # !
     total_R = 0.0
+    total_kid_R = 0.0
     change_R = 0.0
     total_E = 0.0
     total_G = 0.0
@@ -126,26 +126,17 @@ def parkid(num_episodes=1000,
         env.reset()
 
         # ---
-        # Share value (sans state) before choosing
-        par_R = par_R * (1 - share)
-        kid_R += par_R * share
-        par_E += kid_E
-
         # PAR move (always first)
-        actor, critic, par_policy = par_wsls(par_E, par_R)
+        actor, critic, par_policy = par_wsls(par_E + kid_E, par_R)
         par_action = actor(list(critic.model.values()))
         par_state, par_R, _, _ = env.step(par_action)
-
-        par_R = R_homeostasis(par_R, total_R, num_episodes)
         par_G = estimate_regret(all_actions, par_action, critic)
 
-        # ---
         # KID move
         actor, critic, kid_policy = kid_wsls(kid_E, kid_R)
         kid_action = actor(list(critic.model.values()))
         kid_state, kid_R, _, _ = env.step(kid_action)
-
-        kid_R = R_homeostasis(kid_R, total_R, set_point)
+        kid_R = R_homeostasis(kid_R + (par_R * share), total_kid_R, set_point)
         kid_G = estimate_regret(all_actions, kid_action, critic)
 
         # ---
@@ -168,7 +159,7 @@ def parkid(num_episodes=1000,
         # Shared
         if share_update:
             par_wsls.update(kid_action, kid_E, None, lr_R)
-            kid_wsls.update(par_action, None, par_R * share, lr_R)
+            kid_wsls.update(par_action, None, par_R, lr_R)
 
         # ---
         # Log
@@ -190,14 +181,16 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_score_R", kid_R, n)
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
-        total_E += par_E  #+ kid_E
-        total_R += par_R  #+ kid_R
-        total_G += par_G  #+ kid_G
+        total_E += par_E
+        total_R += par_R * (1 - share)
+        total_kid_R += kid_R  # h and par adjusted
+        total_G += par_G
         if n < change:
             change_R += par_R  #+ kid_R
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
+        log.add_scalar("total_kid_R", total_kid_R, n)
         log.add_scalar("change_R", change_R, n)
         tie = 0
         if actor.tied:
