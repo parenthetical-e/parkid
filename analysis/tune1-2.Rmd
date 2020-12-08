@@ -70,3 +70,36 @@ result %>%
   scale_color_manual("", values = c("mediumpurple3", "lightsteelblue4")) +
   labs(x="Rank", y="Reward (R)") 
 ```
+
+# Plot boredom
+```{r, fig.width=2, fig.height=0.8}
+result %>% 
+  # filter(index < 100) %>%
+  ggplot(aes(x=log10(par_boredom), y=change_R, color=agent)) +
+  geom_point(size=0.6, alpha=0.9) +
+  # geom_line(size=0.6, alpha=0.6) +
+  geom_smooth() +
+  theme_classic2() +
+  facet_grid(.~agent) +
+    theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  ) +
+  scale_color_manual("", values = c("mediumpurple3", "lightsteelblue4")) +
+  labs(x="Parent boredom", y="Reward (R)") 
+```
+
+```{r, fig.width=2, fig.height=1.2}
+result %>% 
+  filter(agent == "parkid") %>% 
+  ggplot(aes(x=log10(kid_boredom), y=change_R, color=log10(par_boredom))) +
+  geom_point(size=1, alpha=0.9) +
+  theme_classic2() +
+  facet_grid(.~agent) +
+    theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  ) +
+  scale_color_continuous("Kid boredom") +
+  labs(x="Kid boredom", y="Reward (R)") 
+```
