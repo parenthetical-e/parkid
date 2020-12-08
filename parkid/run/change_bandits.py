@@ -190,11 +190,11 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_score_R", kid_R, n)
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
-        total_E += par_E + kid_E
-        total_R += par_R + kid_R
-        total_G += par_G + kid_G
+        total_E += par_E  #+ kid_E
+        total_R += par_R  #+ kid_R
+        total_G += par_G  #+ kid_G
         if n < change:
-            change_R += par_R + kid_R
+            change_R += par_R  #+ kid_R
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
@@ -233,17 +233,19 @@ def parkid(num_episodes=1000,
     return {"total_R": total_R, "change_R": change_R}
 
 
-def twopar(num_episodes=1000,
-           change=100,
-           env_name1="BanditUniform4",
-           env_name2="BanditChange4",
-           tie_break='next',
-           par_boredom=0.0,
-           share=0.0,
-           lr_R=.1,
-           master_seed=42,
-           log_dir=None,
-           write_to_disk=True):
+def twopar(
+        num_episodes=1000,
+        change=100,
+        env_name1="BanditUniform4",
+        env_name2="BanditChange4",
+        tie_break='next',
+        par_boredom=0.0,
+        share=0.0,  # dummy
+        share_update=False,  # dummy
+        lr_R=.1,
+        master_seed=42,
+        log_dir=None,
+        write_to_disk=True):
     """Parents and kids play a game of changing bandits"""
 
     # ------------------------------------------------------------------------
@@ -363,6 +365,12 @@ def twopar(num_episodes=1000,
         par_wsls.update(par_action, par_E, par_R, lr_R)
         alt_wsls.update(alt_action, alt_E, alt_R, lr_R)
 
+        # Shared
+        # if share_update:
+        # pass
+        # par_wsls.update(alt_action, alt_E, None, lr_R)
+        # alt_wsls.update(par_action, None, par_R, lr_R)
+
         # ---
         # Log
         log.add_scalar("best", env.best[0], n)
@@ -383,11 +391,11 @@ def twopar(num_episodes=1000,
         log.add_scalar("alt_score_R", alt_R, n)
         log.add_scalar("alt_value_E", alt_wsls.critic_E(alt_action), n)
         log.add_scalar("alt_value_R", alt_wsls.critic_R(alt_action), n)
-        total_E += par_E + alt_E
-        total_R += par_R + alt_R
-        total_G += par_G + alt_G
+        total_E += (par_E + alt_E) / 2
+        total_R += (par_R + alt_R) / 2
+        total_G += (par_G + alt_G) / 2
         if n < change:
-            change_R += par_R + alt_R
+            change_R += (par_R + alt_R) / 2
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)

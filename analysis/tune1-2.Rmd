@@ -67,6 +67,7 @@ result %>%
   geom_point(size=0.6, alpha=0.6) +
   geom_line(size=0.6, alpha=0.6) +
   theme_classic2() +
+  lims(y=c(0, 60)) +
   scale_color_manual("", values = c("mediumpurple3", "lightsteelblue4")) +
   labs(x="Rank", y="Reward (R)") 
 ```
@@ -92,7 +93,7 @@ result %>%
 ```{r, fig.width=2, fig.height=1.2}
 result %>% 
   filter(agent == "parkid") %>% 
-  ggplot(aes(x=log10(kid_boredom), y=change_R, color=log10(par_boredom))) +
+  ggplot(aes(x=log10(par_boredom), y=change_R, color=log10(kid_boredom))) +
   geom_point(size=1, alpha=0.9) +
   theme_classic2() +
   facet_grid(.~agent) +
@@ -101,5 +102,5 @@ result %>%
     strip.text.x = element_blank()
   ) +
   scale_color_continuous("Kid boredom") +
-  labs(x="Kid boredom", y="Reward (R)") 
+  labs(x="Par boredom", y="Reward (R)", title="parkid") 
 ```
