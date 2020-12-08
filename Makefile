@@ -97,3 +97,40 @@ tune4:
 		--num_processes=4 \
 		--log_space=True \
 		--par_boredom='(1e-4, 1e-1)' 
+
+# --------------------------------------------------------------------------
+# 12-8-20
+# 49c98a8
+#
+# Kid homeostasis now iss turned on. In above it was off.
+# 
+# RESULT: 
+
+tune1: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune1 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--log_space=True \
+		--par_boredom='(1e-4, 1e-1)' \
+		--kid_boredom='(1e-4, 1e-1)' \
+		--set_point='(1, 120)' \
+
+tune2: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune2 \
+		--model_name='twopar' \
+		 --env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--log_space=True \
+		--par_boredom='(1e-4, 1e-1)' 
+
