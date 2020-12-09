@@ -82,7 +82,6 @@ def random(name,
            num_samples=10,
            num_processes=1,
            metric="change_R",
-           log_space=False,
            verbose=False,
            master_seed=None,
            **config_kwargs):
