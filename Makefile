@@ -100,7 +100,7 @@ tune4:
 #
 # Kid homeostasis now iss turned on. In above it was off.
 # 
-# RESULT: 
+# RESULT: yay parkid
 
 tune5: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune5 \
@@ -149,7 +149,7 @@ tune7:
 #
 # Tweaked how H is calc. Run tune5-7 again w/ this change
 # 
-# RESULT: 
+# RESULT: yay parkid
 
 tune8: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune8 \
