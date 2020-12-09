@@ -142,3 +142,52 @@ tune7:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
+
+# --------------------------------------------------------------------------
+# 12-9-20
+# 6955692
+#
+# Tweaked how H is calc. Run tune5-7 again w/ this change
+# 
+# RESULT: 
+
+tune8: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune8 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 120)'  
+
+tune9: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune9 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 120)' \
+		--share='(uniform, 1e-6, 1)'
+
+tune10: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune10 \
+		--model_name='twopar' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' 
