@@ -327,7 +327,6 @@ def twopar(
 
         # Pull a lever.
         par_state, par_R, _, _ = env.step(par_action)
-        par_R = R_homeostasis(par_R, total_R, num_episodes)
 
         # ---
         # ALT move
@@ -339,7 +338,6 @@ def twopar(
 
         # Pull a lever.
         alt_state, alt_R, _, _ = env.step(alt_action)
-        alt_R = R_homeostasis(alt_R, total_R, num_episodes)
 
         # ---
         # PAR
