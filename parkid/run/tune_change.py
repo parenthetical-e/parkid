@@ -133,12 +133,17 @@ def random(name,
         # Make a new sample
         for k, par in config_kwargs.items():
             try:
-                low, high = par
-                if log_space:
+                mode, low, high = par
+                mode = str(mode)
+
+                if mode == "loguniform":
                     params["config"][k] = loguniform(
                         low, high).rvs(random_state=prng)
-                else:
+                elif mode == "uniform":
                     params["config"][k] = prng.uniform(low=low, high=high)
+                else:
+                    raise ValueError(f"mode {mode} not understood")
+
             except TypeError:  # number?
                 params["config"][k] = float(par)
             except ValueError:  # string?

@@ -32,7 +32,7 @@ exp2:
 # exp1-2 are cheap to run. Do a random hp search. Let's see how good they can 
 # really do. (Keep lr fixed.
 # 
-# RESULT: 
+# RESULT: yay parkid
 
 tune1: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune1 \
@@ -45,8 +45,8 @@ tune1:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' \
-		--kid_boredom='(1e-4, 1e-1)'
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)'
 
 tune2: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune2 \
@@ -59,7 +59,7 @@ tune2:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' 
+		--par_boredom='(loguniform, 1e-4, 1e-1)' 
 
 # --------------------------------------------------------------------------
 # 12-4-20
@@ -67,7 +67,7 @@ tune2:
 #
 # Share updates (but not rewards)
 # 
-# RESULT: 
+# RESULT: yay parkid (but a little less yay then tune1/2)
 
 tune3: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune3 \
@@ -81,8 +81,8 @@ tune3:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' \
-		--kid_boredom='(1e-4, 1e-1)'
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)'
 
 tune4: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune4 \
@@ -96,18 +96,32 @@ tune4:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' 
+		--par_boredom='(loguniform, 1e-4, 1e-1)' 
 
 # --------------------------------------------------------------------------
 # 12-8-20
-# 49c98a8
+# 4a782d0
 #
 # Kid homeostasis now iss turned on. In above it was off.
 # 
 # RESULT: 
 
-tune1: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune1 \
+tune5: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune5 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 120)'  
+
+tune6: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune6 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -117,14 +131,15 @@ tune1:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' \
-		--kid_boredom='(1e-4, 1e-1)' \
-		--set_point='(1, 120)' \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 120)' \
+		--share='(uniform, 1e-6, 1)'
 
-tune2: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune2 \
+tune7: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune7 \
 		--model_name='twopar' \
-		 --env_name1="BanditUniform4" \
+		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
 		--num_episodes=120 \
@@ -132,5 +147,4 @@ tune2:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--log_space=True \
-		--par_boredom='(1e-4, 1e-1)' 
-
+		--par_boredom='(loguniform, 1e-4, 1e-1)' 
