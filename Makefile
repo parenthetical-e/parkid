@@ -191,3 +191,52 @@ tune10:
 		--num_repeats=25 \
 		--num_processes=4 \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
+
+# --------------------------------------------------------------------------
+# 12-9-20
+# 6955692
+#
+# Try 121 bandits (matching more or less tune8-10)
+# 
+# RESULT: 
+
+tune11: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune11 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform121" \
+		--env_name2="BanditChange121" \
+		--change=1210 \
+		--num_episodes=2420 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-6, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-6, 1e-1)' \
+		--set_point='(uniform, 1, 120)'  
+
+tune12: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune12 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform121" \
+		--env_name2="BanditChange121" \
+		--change=1210 \
+		--num_episodes=2420 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-6, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-6, 1e-1)' \
+		--set_point='(uniform, 1, 120)' \
+		--share='(uniform, 1e-6, 1)'
+
+tune13: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune13 \
+		--model_name='twopar' \
+		--env_name1="BanditUniform121" \
+		--env_name2="BanditChange121" \
+		--change=1210 \
+		--num_episodes=2420 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-6, 1e-1)' 
