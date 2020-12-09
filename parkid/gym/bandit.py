@@ -67,7 +67,7 @@ class BanditEnv(gym.Env):
 
 
 class BanditUniform4(BanditEnv):
-    """A 121 armed bandit."""
+    """A 4 armed bandit."""
     def __init__(self, p_min=0.1, p_max=0.3, p_best=0.6, best=2):
         self.best = [best]
         self.num_arms = 4
@@ -102,7 +102,7 @@ class BanditUniform4(BanditEnv):
 
 
 class BanditChange4(BanditEnv):
-    """Change the worst choice to the best BanditUniform121"""
+    """Change the worst choice to the best BanditUniform4"""
     def __init__(self,
                  p_min=0.1,
                  p_max=0.3,
@@ -164,7 +164,7 @@ class BanditUniform121(BanditEnv):
         # reward
         r_dist = [1] * self.num_arms
 
-        # ---
+        # !
         BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
 
     def seed(self, seed=None):
@@ -179,7 +179,7 @@ class BanditUniform121(BanditEnv):
         return [seed]
 
 
-class BanditChange121(BanditUniform121):
+class BanditChange121(BanditEnv):
     """Change the worst choice to the best BanditUniform121"""
     def __init__(self,
                  p_min=0.1,
@@ -187,18 +187,35 @@ class BanditChange121(BanditUniform121):
                  p_best=0.99,
                  p_org=0.6,
                  org_best=54):
-        super().__init__(p_min=p_min, p_max=p_max, p_best=p_org, best=org_best)
 
-        # Save the old best
-        self.original_best = deepcopy(self.best)
+        # Init
+        self.num_arms = 121
+        self.p_min = p_min
+        self.p_max = p_max
         self.p_best = p_best
+        self.orginal = BanditUniform4(p_min=p_min,
+                                      p_max=p_max,
+                                      p_best=p_org,
+                                      best=org_best)
 
-        # Make the worst the best
+        # Build p_dist from org
+        self.p_dist = deepcopy(self.orginal.p_dist)
         self.best = [np.argmin(self.p_dist)]
         self.p_dist[self.best[0]] = self.p_best
 
+        # Build r_dist
+        self.r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=self.p_dist, r_dist=self.r_dist)
+
     def seed(self, seed=None):
-        super().seed(seed)
+        # Set
+        self.np_random, seed = seeding.np_random(seed)
+
+        # Build p_dist from seed
+        self.orginal.seed(seed)
+        self.p_dist = deepcopy(self.orginal.p_dist)
         self.best = [np.argmin(self.p_dist)]
         self.p_dist[self.best[0]] = self.p_best
 
