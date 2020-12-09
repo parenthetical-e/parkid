@@ -210,9 +210,9 @@ tune11:
 		--num_samples=100 \
 		--num_repeats=25 \
 		--num_processes=40 \
-		--par_boredom='(loguniform, 1e-6, 1e-1)' \
-		--kid_boredom='(loguniform, 1e-6, 1e-1)' \
-		--set_point='(uniform, 1, 120)'  
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 2420)'  
 
 tune12: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune12 \
@@ -224,9 +224,9 @@ tune12:
 		--num_samples=100 \
 		--num_repeats=25 \
 		--num_processes=40 \
-		--par_boredom='(loguniform, 1e-6, 1e-1)' \
-		--kid_boredom='(loguniform, 1e-6, 1e-1)' \
-		--set_point='(uniform, 1, 120)' \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 2420)' \
 		--share='(uniform, 1e-6, 1)'
 
 tune13: 
