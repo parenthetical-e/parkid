@@ -126,7 +126,6 @@ tune6:
 		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
-		--log_space=True \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' \
 		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
 		--set_point='(uniform, 1, 120)' \
@@ -142,5 +141,4 @@ tune7:
 		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
-		--log_space=True \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
