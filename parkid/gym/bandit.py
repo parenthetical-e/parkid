@@ -193,10 +193,10 @@ class BanditChange121(BanditEnv):
         self.p_min = p_min
         self.p_max = p_max
         self.p_best = p_best
-        self.orginal = BanditUniform4(p_min=p_min,
-                                      p_max=p_max,
-                                      p_best=p_org,
-                                      best=org_best)
+        self.orginal = BanditUniform121(p_min=p_min,
+                                        p_max=p_max,
+                                        p_best=p_org,
+                                        best=org_best)
 
         # Build p_dist from org
         self.p_dist = deepcopy(self.orginal.p_dist)
