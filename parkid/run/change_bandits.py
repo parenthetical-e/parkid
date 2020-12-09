@@ -70,6 +70,7 @@ def parkid(num_episodes=1000,
     par_R = R_0
     kid_E = E_0
     kid_R = R_0
+    kid_H = R_0
     initial_bins = [0, 1]
 
     if set_point is None:
@@ -112,10 +113,11 @@ def parkid(num_episodes=1000,
     # ------------------------------------------------------------------------
     # !
     total_R = 0.0
-    total_kid_R = 0.0
     change_R = 0.0
     total_E = 0.0
     total_G = 0.0
+    total_kid_R = 0.0
+    total_kid_H = 0.0
     for n in range(num_episodes):
         # ---
         # Set env
@@ -133,10 +135,10 @@ def parkid(num_episodes=1000,
         par_G = estimate_regret(all_actions, par_action, critic)
 
         # KID move
-        actor, critic, kid_policy = kid_wsls(kid_E, kid_R)
+        actor, critic, kid_policy = kid_wsls(kid_E, kid_H)
         kid_action = actor(list(critic.model.values()))
         kid_state, kid_R, _, _ = env.step(kid_action)
-        kid_R = R_homeostasis(kid_R + (par_R * share), total_kid_R, set_point)
+        kid_H = R_homeostasis(kid_R + (par_R * share), total_kid_R, set_point)
         kid_G = estimate_regret(all_actions, kid_action, critic)
 
         # ---
@@ -155,7 +157,7 @@ def parkid(num_episodes=1000,
         # Learning, both policies.
         # Direct
         par_wsls.update(par_action, par_E, par_R, lr_R)
-        kid_wsls.update(kid_action, kid_E, kid_R, lr_R)
+        kid_wsls.update(kid_action, kid_E, kid_H, lr_R)
         # Shared
         if share_update:
             par_wsls.update(kid_action, kid_E, None, lr_R)
@@ -179,11 +181,13 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_regret", kid_G, n)
         log.add_scalar("kid_score_E", kid_E, n)
         log.add_scalar("kid_score_R", kid_R, n)
+        log.add_scalar("kid_score_H", kid_H, n)
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
         total_E += par_E
         total_R += par_R * (1 - share)
-        total_kid_R += kid_R  # h and par adjusted
+        total_kid_R += kid_R
+        total_kid_H += kid_H
         total_G += par_G
         if n < change:
             change_R += par_R  #+ kid_R
@@ -191,6 +195,7 @@ def parkid(num_episodes=1000,
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
         log.add_scalar("total_kid_R", total_kid_R, n)
+        log.add_scalar("total_kid_H", total_kid_H, n)
         log.add_scalar("change_R", change_R, n)
         tie = 0
         if actor.tied:
