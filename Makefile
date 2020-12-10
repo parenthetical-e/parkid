@@ -198,7 +198,7 @@ tune10:
 #
 # Try 121 bandits (matching more or less tune8-10)
 # 
-# RESULT: 
+# RESULT: yay parkid
 
 tune11: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune11 \
