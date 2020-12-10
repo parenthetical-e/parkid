@@ -196,7 +196,7 @@ tune10:
 # 12-9-20
 # 6955692
 #
-# Try 121 bandits (matching more or less tune8-10)
+# Try 121 bandits (matching tune8-10, more or less)
 # 
 # RESULT: yay parkid
 
