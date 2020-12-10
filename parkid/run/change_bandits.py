@@ -20,10 +20,6 @@ from parkid.models import DeterministicActor
 from parkid.models import WSLS
 from parkid.models import WSLSh
 from parkid.gym import bandit
-# from parkid.gym.bandit import BanditUniform121
-# from parkid.gym.bandit import BanditChange121
-# from parkid.gym.bandit import BanditUniform4
-# from parkid.gym.bandit import BanditChange4
 
 
 def parkid(num_episodes=1000,
