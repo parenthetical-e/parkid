@@ -5,8 +5,7 @@ from collections import OrderedDict
 
 
 def R_update(state, R, critic, lr):
-    """Really simple TD learning"""
-
+    """TD update"""
     update = lr * (R - critic(state))
     critic.update(state, update)
 
@@ -53,7 +52,7 @@ class WSLS:
 
 
 class WSLSh(WSLS):
-    """Win-stay lose-switch policy control (for homeostatic R)"""
+    """Win-stay lose-switch policy control, for homeostatic rewards"""
     def __init__(self, actor_E, critic_E, actor_R, critic_R, boredom=0.0):
         super().__init__(actor_E, critic_E, actor_R, critic_R, boredom=boredom)
 
@@ -70,6 +69,9 @@ class WSLSh(WSLS):
         return actor, critic, policy
 
 
+# COPY from informercial; wanted to rename some params
+# and make some small changes w/out disrupting that
+# code base
 class Critic:
     def __init__(self, num_inputs, default_value):
         self.num_inputs = num_inputs
