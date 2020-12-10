@@ -25,16 +25,16 @@ from infomercial.exp.tune_bandit import save_csv
 from parkid.run import change_bandits
 
 
-def train(exp_func=None,
-          env_name1=None,
-          env_name2=None,
-          change=None,
-          share_update=None,
-          metric=None,
-          num_episodes=None,
-          num_repeats=None,
-          master_seed=None,
-          config=None):
+def _train(exp_func=None,
+           env_name1=None,
+           env_name2=None,
+           change=None,
+           share_update=None,
+           metric=None,
+           num_episodes=None,
+           num_repeats=None,
+           master_seed=None,
+           config=None):
 
     # Run
     scores = []
@@ -85,7 +85,7 @@ def random(name,
            verbose=False,
            master_seed=None,
            **config_kwargs):
-    """Tune hyperparameters of any bandit experiment."""
+    """Tune hyperparameters for change_bandits."""
     prng = np.random.RandomState(master_seed)
 
     # -
@@ -150,7 +150,7 @@ def random(name,
 
         # A worker gets the new sample
         workers.append(
-            pool.apply_async(train,
+            pool.apply_async(_train,
                              kwds=deepcopy(params),
                              callback=append_to_results))
 
