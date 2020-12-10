@@ -334,3 +334,83 @@ exp8:
 			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp8/param{index}/run1 --master_seed=42' :::: tmp
 	# Clean up
 	rm tmp
+
+# -
+# tune11-13
+# -
+
+## -
+## top-1
+### tune8
+exp9: 
+	# Get top 1
+	head -n 2 $(DATA_PATH)/tune11_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp9.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			"python parkid/run/change_bandits.py parkid --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --kid_boredom={kid_boredom} --set_point={set_point} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp9/param{index}/run{1} --master_seed={1}" ::: {0..10} :::: tmp
+	# Clean up
+	rm tmp
+
+### tune9
+exp10: 
+	# Get top 1
+	head -n 2 $(DATA_PATH)/tune12_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp10.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --kid_boredom={kid_boredom} --set_point={set_point} --share={share} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp10/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
+	# Clean up
+	rm tmp
+
+### tune10
+exp11: 
+	# Get top 1
+	head -n 2 $(DATA_PATH)/tune13_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp11.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp11/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
+	# Clean up
+	rm tmp
+
+## -
+## top-10
+### tune8
+exp12: 
+	# Get top 1
+	head -n 11 $(DATA_PATH)/tune11_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp12.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --kid_boredom={kid_boredom} --set_point={set_point} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp12/param{index}/run1 --master_seed=42' :::: tmp
+	# Clean up
+	rm tmp
+
+### tune9
+exp13: 
+	# Get top 1
+	head -n 11 $(DATA_PATH)/tune12_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp13.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --kid_boredom={kid_boredom} --set_point={set_point} --share={share} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp13/param{index}/run1 --master_seed=42' :::: tmp
+	# Clean up
+	rm tmp
+
+### tune10
+exp14: 
+	# Get top 1
+	head -n 11 $(DATA_PATH)/tune13_sorted.csv > tmp 
+	# Run them 10 times
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp14.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp14/param{index}/run1 --master_seed=42' :::: tmp
+	# Clean up
+	rm tmp
