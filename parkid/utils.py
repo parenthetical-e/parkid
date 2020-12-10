@@ -4,7 +4,7 @@ import numpy as np
 def R_homeostasis(reward, total_reward, set_point, cost=0.0):
     """Update reward value assuming homeostatic value.
     
-    Value based on Keramati and Gutkin, 2014.
+    Value loosely based on Keramati and Gutkin, 2014.
     https://elifesciences.org/articles/04811
     """
     if np.isclose(set_point, np.inf):
