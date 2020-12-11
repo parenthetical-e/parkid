@@ -8,6 +8,7 @@ from tqdm import tqdm
 from scipy.stats import loguniform
 from functools import partial
 from multiprocessing import Pool
+from scipy.stats import median_absolute_deviation as mad
 
 # Borrow utils
 from infomercial.utils import save_checkpoint
@@ -65,6 +66,7 @@ def _train(exp_func=None,
         "num_episodes": num_episodes,
         "num_repeats": num_repeats,
         "metric": metric,
+        "scores": scores,
         "master_seed": master_seed,
     })
 
@@ -113,6 +115,7 @@ def random(name,
         trial = {}
         trial["config"] = result["config"]
         trial[metric] = result[metric]
+        trial["scores"] = result["scores"]
         trials.append(trial)
 
     # Setup default params
@@ -177,7 +180,9 @@ def random(name,
     sorted_configs = {}
     for i, trial in enumerate(get_sorted_trials(trials, metric)):
         sorted_configs[i] = trial["config"]
-        sorted_configs[i].update({metric: trial[metric]})
+        sorted_configs[i].update({metric: np.median(trial["scores"])})
+        sorted_configs[i].update({"mad_" + metric: mad(trial["scores"])})
+
     save_csv(sorted_configs, filename=os.path.join(path, name + "_sorted.csv"))
 
     return get_best_trial(trials, metric)
