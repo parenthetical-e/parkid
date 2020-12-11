@@ -93,7 +93,7 @@ p1 + p2
 result %>% 
   ggplot(aes(x=log10(par_boredom), y=change_R, color=agent)) +
   geom_point(size=0.6, alpha=0.4) +
-  geom_smooth(span = 0.4) +
+  geom_smooth(span = 0.6) +
   theme_classic2() +
   facet_grid(.~agent) +
     theme(
@@ -108,7 +108,7 @@ result %>%
 ```{r, fig.width=1.6, fig.height=0.8}
 result %>% 
   ggplot(aes(x=log10(par_boredom), y=change_R, color=agent)) +
-  geom_smooth(span = 0.4, se=FALSE) +
+  geom_smooth(span = 0.6, se=FALSE) +
   theme_classic2() +
     theme(
     strip.background = element_blank(),
@@ -123,7 +123,7 @@ result %>%
   filter(agent == "parkid (share)") %>% 
   ggplot(aes(x=log10(par_boredom), y=change_R, color=log10(par_boredom))) +
   geom_point(size=1, alpha=0.9) +
-  geom_smooth(span = 0.4, color="black") +
+  geom_smooth(span = 0.6, color="black") +
   theme_classic2() +
   facet_grid(.~agent) +
     theme(
@@ -137,7 +137,7 @@ result %>%
   filter(agent == "parkid (share)") %>% 
   ggplot(aes(x=set_point, y=change_R, color=log10(par_boredom))) +
   geom_point(size=1, alpha=0.9) +
-  geom_smooth(span = 0.4, color="black") +
+  geom_smooth(span = 0.6, color="black") +
   theme_classic2() +
   facet_grid(.~agent) +
     theme(
@@ -152,7 +152,7 @@ result %>%
   filter(agent == "parkid (share)") %>% 
   ggplot(aes(x=share, y=change_R, color=log10(par_boredom))) +
   geom_point(size=1, alpha=0.9) +
-  geom_smooth(span = 0.4, color="black") +
+  geom_smooth(span = 0.6, color="black") +
   theme_classic2() +
   facet_grid(.~agent) +
     theme(
