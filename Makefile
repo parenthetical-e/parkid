@@ -253,7 +253,11 @@ tune13:
 # - tune8-10 (4 arm)
 # - tune11-13 (121 arm)
 #
-# RESULT: 
+# RESULT: The scores for parkid are better (as during tune above) but looking the the behave we are still far from the idea. The kid is not having the influence hand tuning exps suggest is possible. I should get better behave if I 
+# 1. Rerun tune but constrain boredom  kid < adult
+# 2. fix the set_point to the change
+# 3. Use par_boredom from parkid on twopar (i will not always want to do this, see 4)
+# 4. Compare easily bored and curious adults to the parkid. 
 
 # -
 # tune8-10
@@ -414,3 +418,105 @@ exp14:
 			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp14/param{index}/run1 --master_seed=42' :::: tmp
 	# Clean up
 	rm tmp
+
+
+# --------------------------------------------------------------------------
+# 12-10-2020
+#
+# More refined tune to better seperate parkid from twopar
+
+# 1. Constrain boredom  kid < adult
+# 2. fix the `set_point` to the `change`
+# 3. Use par_boredom from parkid on twopar (i will not always want to do this, see 4)
+# 4. Compare easily bored and curious adults to the parkid. 
+
+# -
+# parkid
+# Sweep par_boredom
+tune14: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune14 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--master_seed=42 \
+		--par_boredom='(linspace, 1e-5, 1e-1)' \
+		--kid_boredom=0.0001 \
+		--set_point=60 \
+		--share=0.0
+
+# Sweep kid_boredom
+tune15: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune15 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--master_seed=42 \
+		--par_boredom=1e-3 \
+		--kid_boredom='(linspace, 1e-5, 1e-3)' \
+		--set_point=60 \
+		--share=0.0
+
+# Sample kid_boredom and set_point
+tune16: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune16 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--master_seed=42 \
+		--par_boredom=1e-3 \
+		--kid_boredom='(loguniform, 1e-5, 1e-3)' \
+		--set_point='(uniform, 1, 120)' \
+		--share=0.0 
+
+# Samplle kid_boredom and set_point and share
+tune17: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune17 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--master_seed=42 \
+		--par_boredom=1e-3 \
+		--kid_boredom='(loguniform, 1e-5, 1e-3)' \
+		--set_point='(uniform, 1, 120)' \
+		--share='(uniform, 0.01, 1)'
+
+# -
+# twopar
+# sweep par_bordom
+tune18: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune18 \
+		--model_name='twopar' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=4 \
+		--master_seed=42 \
+		--par_boredom='(linspace, 1e-5, 1e-1)' 
