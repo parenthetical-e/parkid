@@ -151,6 +151,10 @@ def random(name,
                         low, high).rvs(random_state=prngs[i])
                 elif mode == "uniform":
                     params["config"][k] = prngs[i].uniform(low=low, high=high)
+                elif mode == "linspace":
+                    # Its ineff. to generate this everytime; oh well
+                    values = np.linspace(low, high, num=num_samples)
+                    params["config"][k] = values[n]
                 else:
                     raise ValueError(f"mode {mode} not understood")
 
