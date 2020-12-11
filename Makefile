@@ -430,6 +430,10 @@ exp14:
 # 3. Use par_boredom from parkid on twopar (i will not always want to do this, see 4)
 # 4. Compare easily bored and curious adults to the parkid. 
 
+# RESULTS: yay parkid. our model offers a far more robust range. there is 
+#          a max level for par boredom where the kid can't help anymore;
+#          an important limit for the future.
+
 # -
 # parkid
 # Sweep par_boredom
@@ -441,7 +445,7 @@ tune14:
 		--change=60 \
 		--metric='total_R' \
 		--num_episodes=120 \
-		--num_samples=100 \
+		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
 		--master_seed=42 \
@@ -459,7 +463,7 @@ tune15:
 		--change=60 \
 		--metric='total_R' \
 		--num_episodes=120 \
-		--num_samples=100 \
+		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
 		--master_seed=42 \
@@ -477,7 +481,7 @@ tune16:
 		--change=60 \
 		--metric='total_R' \
 		--num_episodes=120 \
-		--num_samples=100 \
+		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
 		--master_seed=42 \
@@ -495,7 +499,7 @@ tune17:
 		--change=60 \
 		--metric='total_R' \
 		--num_episodes=120 \
-		--num_samples=100 \
+		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
 		--master_seed=42 \
@@ -515,7 +519,7 @@ tune18:
 		--change=60 \
 		--metric='total_R' \
 		--num_episodes=120 \
-		--num_samples=100 \
+		--num_samples=200 \
 		--num_repeats=25 \
 		--num_processes=4 \
 		--master_seed=42 \
