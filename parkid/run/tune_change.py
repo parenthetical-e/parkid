@@ -86,7 +86,6 @@ def random(name,
            master_seed=None,
            **config_kwargs):
     """Tune hyperparameters for change_bandits."""
-    prng = np.random.RandomState(master_seed)
 
     # -
     # Init:
@@ -98,6 +97,15 @@ def random(name,
 
     # Build the parallel callback
     trials = []
+
+    # generate sep prngs for each kwargs
+    prngs = []
+    for i in range(len(config_kwargs)):
+        if master_seed is not None:
+            prng = np.random.RandomState(master_seed + i)
+        else:
+            prng = np.random.RandomState()
+        prngs.append(prng)
 
     def append_to_results(result):
         # Keep only params and scores, to save
@@ -130,16 +138,17 @@ def random(name,
         params["config"] = {}
         params["config"]["write_to_disk"] = False
         # Make a new sample
-        for k, par in config_kwargs.items():
+        for i, (k, par) in enumerate(config_kwargs.items()):
             try:
                 mode, low, high = par
                 mode = str(mode)
 
                 if mode == "loguniform":
                     params["config"][k] = loguniform(
-                        low, high).rvs(random_state=prng)
+                        low, high).rvs(random_state=prngs[i])
+                    print(f"{k} : {params['config'][k]}")
                 elif mode == "uniform":
-                    params["config"][k] = prng.uniform(low=low, high=high)
+                    params["config"][k] = prngs[i].uniform(low=low, high=high)
                 else:
                     raise ValueError(f"mode {mode} not understood")
 
