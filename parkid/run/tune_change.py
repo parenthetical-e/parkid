@@ -146,7 +146,6 @@ def random(name,
                 if mode == "loguniform":
                     params["config"][k] = loguniform(
                         low, high).rvs(random_state=prngs[i])
-                    print(f"{k} : {params['config'][k]}")
                 elif mode == "uniform":
                     params["config"][k] = prngs[i].uniform(low=low, high=high)
                 else:
