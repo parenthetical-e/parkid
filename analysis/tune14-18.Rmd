@@ -1,0 +1,310 @@
+---
+title: "Tune 14-18 : parkid versus twopar - focused HP sweeps"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(ggplot2)
+library(tidyr)
+library(ggpubr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/tune14-18/"
+dir.create(img_path)
+```
+
+# Load
+```{r, message=FALSE}
+# -------------------------------------------------------------
+num_episodes <- 120
+
+# The overestimate due to E0
+num_arms <- 4
+
+rank_names <- c(
+  "tune14_sorted.csv",
+  "tune15_sorted.csv",
+  "tune16_sorted.csv",
+  "tune17_sorted.csv",
+  "tune18_sorted.csv"
+)
+
+agent_names <- c("parkid (par_boredom)",
+                 "parkid (kid_boredom)",
+                 "parkid (kid_boredom,set_point)",
+                 "parkid (kid_boredom,set_point,share)",
+                 "twopar (par_boredom)")
+
+result <- NULL
+for (i in 1:length(rank_names)) {
+  rank_name <- rank_names[i]
+  agent_name <- agent_names[i]
+  
+  tmp <- read_csv(paste(data_path, rank_name, sep = "/"))
+  tmp$exp <- rank_name
+  tmp$agent <- agent_name
+  
+  result <- bind_rows(result, tmp)
+}
+
+result$agent <- factor(result$agent, levels = agent_names)
+```
+
+# Plot ranked
+```{r, fig.width=5, fig.height=1.2}
+result %>%
+  # filter(index < 25) %>%
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Rank", y = "Reward (R)", title="Overall performance") +
+  facet_grid(.~agent)
+```
+
+# Plot kid's useful?
+```{r, fig.width=3, fig.height=1.2}
+result %>%
+  filter(exp %in% c("tune14_sorted.csv", "tune18_sorted.csv")) %>% 
+  ggplot(aes(x = par_boredom, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    panel.spacing = unit(1.2, "lines")
+  ) +
+  # lims(y=c(25, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+  ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+  ) +
+  labs(x = "Par. boredom", y = "Reward (R)", "The Kid advantage") +
+  facet_grid(.~agent)
+```
+
+# Plot opt kid params
+```{r, fig.width=3, fig.height=2}
+result %>%
+  # filter(index < 25) %>% 
+  filter(exp %in% c("tune14_sorted.csv", "tune15_sorted.csv", "tune16_sorted.csv")) %>% 
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    panel.spacing = unit(1.2, "lines")
+  ) +
+  # lims(y=c(25, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+  ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+  ) +
+  labs(x = "Rank", y = "Reward (R)", "The Kid advantage") 
+```
+
+```{r, fig.width=3, fig.height=2}
+result %>%
+  # filter(index < 25) %>% 
+  filter(exp %in% c("tune15_sorted.csv")) %>% 
+  ggplot(aes(x = kid_boredom, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    panel.spacing = unit(1.2, "lines")
+  ) +
+  # lims(y=c(25, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+  ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+  ) +
+  labs(x = "Kid boredom", y = "Reward (R)", "The Kid advantage") 
+```
+
+```{r, fig.width=3, fig.height=2}
+result %>%
+  # filter(index < 25) %>% 
+  filter(exp %in% c("tune16_sorted.csv")) %>% 
+  ggplot(aes(x = set_point, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    panel.spacing = unit(1.2, "lines")
+  ) +
+  # lims(y=c(25, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+  ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+  ) +
+  labs(x = "Kid set point", y = "Reward (R)", "The Kid advantage") 
+```
