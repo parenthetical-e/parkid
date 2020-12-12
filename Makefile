@@ -35,7 +35,7 @@ exp2:
 # RESULT: yay parkid
 
 tune1: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune1 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune1 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -48,7 +48,7 @@ tune1:
 		--kid_boredom='(loguniform, 1e-4, 1e-1)'
 
 tune2: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune2 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune2 \
 		--model_name='twopar' \
 		 --env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -68,7 +68,7 @@ tune2:
 # RESULT: yay parkid (but a little less yay then tune1/2)
 
 tune3: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune3 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune3 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -82,7 +82,7 @@ tune3:
 		--kid_boredom='(loguniform, 1e-4, 1e-1)'
 
 tune4: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune4 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune4 \
 		--model_name='twopar' \
 		 --env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -103,7 +103,7 @@ tune4:
 # RESULT: yay parkid
 
 tune5: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune5 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune5 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -117,7 +117,7 @@ tune5:
 		--set_point='(uniform, 1, 120)'  
 
 tune6: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune6 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune6 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -132,7 +132,7 @@ tune6:
 		--share='(uniform, 1e-6, 1)'
 
 tune7: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune7 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune7 \
 		--model_name='twopar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -152,7 +152,7 @@ tune7:
 # RESULT: yay parkid
 
 tune8: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune8 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune8 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -166,7 +166,7 @@ tune8:
 		--set_point='(uniform, 1, 120)'  
 
 tune9: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune9 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune9 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -181,7 +181,7 @@ tune9:
 		--share='(uniform, 1e-6, 1)'
 
 tune10: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune10 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune10 \
 		--model_name='twopar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -201,7 +201,7 @@ tune10:
 # RESULT: yay parkid
 
 tune11: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune11 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune11 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
@@ -215,7 +215,7 @@ tune11:
 		--set_point='(uniform, 1, 2420)'  
 
 tune12: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune12 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune12 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
@@ -230,7 +230,7 @@ tune12:
 		--share='(uniform, 1e-6, 1)'
 
 tune13: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune13 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune13 \
 		--model_name='twopar' \
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
@@ -438,7 +438,7 @@ exp14:
 # parkid
 # Sweep par_boredom
 tune14: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune14 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune14 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -456,7 +456,7 @@ tune14:
 
 # Sweep kid_boredom
 tune15: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune15 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune15 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -474,7 +474,7 @@ tune15:
 
 # Sample kid_boredom and set_point
 tune16: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune16 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune16 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -492,7 +492,7 @@ tune16:
 
 # Samplle kid_boredom and set_point and share
 tune17: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune17 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune17 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -512,7 +512,7 @@ tune17:
 # twopar
 # sweep par_bordom
 tune18: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune18 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune18 \
 		--model_name='twopar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \

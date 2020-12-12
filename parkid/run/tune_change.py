@@ -73,20 +73,20 @@ def _train(exp_func=None,
     return trial
 
 
-def random(name,
-           model_name="parkid",
-           env_name1="BanditUniform4",
-           env_name2="BanditChange4",
-           change=100,
-           num_episodes=40,
-           share_update=False,
-           num_repeats=10,
-           num_samples=10,
-           num_processes=1,
-           metric="change_R",
-           verbose=False,
-           master_seed=None,
-           **config_kwargs):
+def tune(name,
+         model_name="parkid",
+         env_name1="BanditUniform4",
+         env_name2="BanditChange4",
+         change=100,
+         num_episodes=40,
+         share_update=False,
+         num_repeats=10,
+         num_samples=10,
+         num_processes=1,
+         metric="change_R",
+         verbose=False,
+         master_seed=None,
+         **config_kwargs):
     """Tune hyperparameters for change_bandits."""
 
     # -
@@ -196,4 +196,4 @@ def random(name,
 # !
 if __name__ == "__main__":
     # Create CL interface
-    fire.Fire({"random": random})
+    fire.Fire(tune)
