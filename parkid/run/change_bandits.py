@@ -128,13 +128,15 @@ def parkid(num_episodes=1000,
         actor, critic, par_policy = par_wsls(par_E + kid_E, par_R)
         par_action = actor(list(critic.model.values()))
         par_state, par_R, _, _ = env.step(par_action)
-        par_G = estimate_regret(all_actions, par_action, critic)
 
         # KID move
         actor, critic, kid_policy = kid_wsls(kid_E, kid_H)
         kid_action = actor(list(critic.model.values()))
         kid_state, kid_R, _, _ = env.step(kid_action)
+
         kid_H = R_homeostasis(kid_R + (par_R * share), total_kid_R, set_point)
+
+        par_G = estimate_regret(all_actions, par_action, critic)
         kid_G = estimate_regret(all_actions, kid_action, critic)
 
         # ---
@@ -181,7 +183,7 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
         total_E += par_E
-        total_R += par_R * (1 - share)
+        total_R += par_R
         total_kid_R += kid_R
         total_kid_H += kid_H
         total_G += par_G
