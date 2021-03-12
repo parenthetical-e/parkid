@@ -534,7 +534,7 @@ tune18:
 # ***Used to generate data for Feb 2021 TRI grant***
 #
 # Do a parkid run, and parpar run, with a shared boredom level - 0.025.
-
+#
 # I choose a boredom level that leads to good performance of both models on the 
 # first 60 trials before the chage, but is problem for parpar after 
 # the change.
