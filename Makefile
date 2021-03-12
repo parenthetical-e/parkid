@@ -22,7 +22,7 @@ exp2:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp2.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py twopar --num_episodes=120  --change=60 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/exp2/run{1} --master_seed={1}' ::: {0..20} 
+			'python parkid/run/change_bandits.py parpar --num_episodes=120  --change=60 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/exp2/run{1} --master_seed={1}' ::: {0..20} 
 			
 
 # --------------------------------------------------------------------------
@@ -49,7 +49,7 @@ tune1:
 
 tune2: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune2 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		 --env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
@@ -83,7 +83,7 @@ tune3:
 
 tune4: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune4 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		 --env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
@@ -133,7 +133,7 @@ tune6:
 
 tune7: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune7 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
@@ -182,7 +182,7 @@ tune9:
 
 tune10: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune10 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
@@ -231,7 +231,7 @@ tune12:
 
 tune13: 
 	python parkid/run/tune_change.py random $(DATA_PATH)/tune13 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
 		--change=1210 \
@@ -256,7 +256,7 @@ tune13:
 # RESULT: The scores for parkid are better (as during tune above) but looking the the behave we are still far from the idea. The kid is not having the influence hand tuning exps suggest is possible. I should get better behave if I 
 # 1. Rerun tune but constrain boredom  kid < adult
 # 2. fix the set_point to the change
-# 3. Use par_boredom from parkid on twopar (i will not always want to do this, see 4)
+# 3. Use par_boredom from parkid on parpar (i will not always want to do this, see 4)
 # 4. Compare easily bored and curious adults to the parkid. 
 
 # -
@@ -297,7 +297,7 @@ exp5:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp5.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp5/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp5/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
 	# Clean up
 	rm tmp
 
@@ -335,7 +335,7 @@ exp8:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp8.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp8/param{index}/run1 --master_seed=42' :::: tmp
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp8/param{index}/run1 --master_seed=42' :::: tmp
 	# Clean up
 	rm tmp
 
@@ -377,7 +377,7 @@ exp11:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp11.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp11/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp11/param{index}/run{1} --master_seed={1}' ::: {0..10} :::: tmp
 	# Clean up
 	rm tmp
 
@@ -415,7 +415,7 @@ exp14:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp14.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py twopar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp14/param{index}/run1 --master_seed=42' :::: tmp
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform121 --env_name2=BanditChange121 --num_episodes=2420 --change=1210 --par_boredom={par_boredom} --lr_R=0.1 --log_dir=$(DATA_PATH)/exp14/param{index}/run1 --master_seed=42' :::: tmp
 	# Clean up
 	rm tmp
 
@@ -424,11 +424,11 @@ exp14:
 # 12-10-2020
 # a2fe023
 #
-# More refined tune to better seperate parkid from twopar
+# More refined tune to better seperate parkid from parpar
 
 # 1. Constrain boredom  kid < adult
 # 2. fix the `set_point` to the `change`
-# 3. Use par_boredom from parkid on twopar (i will not always want to do this, see 4)
+# 3. Use par_boredom from parkid on parpar (i will not always want to do this, see 4)
 # 4. Compare easily bored and curious adults to the parkid. 
 
 # RESULTS: yay parkid. our model offers a far more robust range. there is 
@@ -510,11 +510,11 @@ tune17:
 		--share='(uniform, 0.01, 1)'
 
 # -
-# twopar
+# parpar
 # sweep par_bordom
 tune18: 
 	python parkid/run/tune_change.py $(DATA_PATH)/tune18 \
-		--model_name='twopar' \
+		--model_name='parpar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
@@ -525,3 +525,33 @@ tune18:
 		--num_processes=4 \
 		--master_seed=42 \
 		--par_boredom='(linspace, 1e-5, 1e-1)' 
+
+
+# --------------------------------------------------------------------------
+# 12-10-2020
+# b71b89b
+#
+# ***Used to generate data for Feb 2021 TRI grant***
+#
+# Do a parkid run, and parpar run, with a shared boredom level - 0.025.
+
+# I choose a boredom level that leads to good performance of both models on the 
+# first 60 trials before the chage, but is problem for parpar after 
+# the change.
+#
+# The tuning runs in tune11-18 suggest there are large regions of
+# parameter space (boredom) for which this hold true.
+#
+# ...It is possible to tune parpar to do as well, of course. It's just more
+# difficult.
+exp15: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp15.log' \
+			--nice 19 --delay 0 --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --kid_boredom=0.0001 --set_point=60 --share=0.0 --log_dir=$(DATA_PATH)/exp15/param0/run{1} --master_seed={1}' ::: {0..100} 
+
+exp16: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp16.log' \
+			--nice 19 --delay 0 --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --log_dir=$(DATA_PATH)/exp16/param0/run{1} --master_seed={1}' ::: {0..100} 
