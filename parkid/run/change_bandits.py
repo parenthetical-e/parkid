@@ -154,7 +154,7 @@ def parkid(num_episodes=1000,
 
         # Learning, both policies.
         # Direct
-        par_wsls.update(par_action, par_E, par_R, lr_R)
+        par_wsls.update(par_action, par_E, par_R * (1 - share), lr_R)
         kid_wsls.update(kid_action, kid_E, kid_H, lr_R)
         # Shared
         if share_update:
@@ -229,7 +229,7 @@ def parkid(num_episodes=1000,
     return {"total_R": total_R, "change_R": change_R}
 
 
-def twopar(
+def parpar(
         num_episodes=1000,
         change=100,
         env_name1="BanditUniform4",
@@ -428,4 +428,4 @@ def twopar(
 
 
 if __name__ == "__main__":
-    fire.Fire({"parkid": parkid, "twopar": twopar})
+    fire.Fire({"parkid": parkid, "parpar": parpar})
