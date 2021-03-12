@@ -1,5 +1,5 @@
 ---
-title: "Tune 1-2 : parkid versus twopar"
+title: "Tune 1-2 : parkid versus parpar"
 output: html_notebook
 ---
 
@@ -42,7 +42,7 @@ num_arms <- 4
 rank_names <- c("tune1_sorted.csv",
                 "tune2_sorted.csv")
 agent_names <- c("parkid",
-                 "twopar")
+                 "parpar")
 
 result <- NULL
 for (i in 1:length(rank_names)) {

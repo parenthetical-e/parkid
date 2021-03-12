@@ -1,5 +1,5 @@
 ---
-title: "Tune 14-18 : parkid versus twopar - focused HP sweeps"
+title: "Tune 14-18 : parkid versus parpar - focused HP sweeps"
 output: html_notebook
 ---
 
@@ -52,7 +52,7 @@ agent_names <- c("parkid (par_boredom)",
                  "parkid (kid_boredom)",
                  "parkid (kid_boredom,set_point)",
                  "parkid (kid_boredom,set_point,share)",
-                 "twopar (par_boredom)")
+                 "parpar (par_boredom)")
 
 result <- NULL
 for (i in 1:length(rank_names)) {
@@ -115,6 +115,52 @@ result %>%
   facet_grid(.~agent)
 ```
 
+# Plot ranked
+## Overplot
+```{r, fig.width=2.5, fig.height=1.2}
+result %>%
+  # filter(index < 25) %>%
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Rank", y = "Reward (R)", title="Overall performance") 
+```
+
 # Plot kid's useful?
 ```{r, fig.width=3, fig.height=1.2}
 result %>%
@@ -160,8 +206,8 @@ result %>%
       "steelblue4"
     )
   ) +
-  labs(x = "Par. boredom", y = "Reward (R)", "The Kid advantage") +
-  facet_grid(.~agent)
+  labs(x = "Par. boredom", y = "Reward (R)", "The Kid advantage") #+
+  # facet_grid(.~agent)
 ```
 
 # Plot opt kid params
