@@ -42,7 +42,7 @@ run_codes <- 1:100
 num_arms <- 4
 
 exp_names <- c("exp15", "exp16")
-agent_names <- c("Parkid", "Parpar")
+agent_names <- c("ParKid", "ParPar")
 file_names <-
   c(
     "par_action",
