@@ -621,9 +621,9 @@ tune19:
 		--num_samples=200 \
 		--num_repeats=100 \
 		--num_processes=40 \
+		--set_point=60
 		--par_boredom='(loguniform, 1e-4, 1e-1)' \
 		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
-		--set_point='(uniform, 1, 120)'  
 
 tune20: 
 	python parkid/run/tune_change.py $(DATA_PATH)/tune20 \
