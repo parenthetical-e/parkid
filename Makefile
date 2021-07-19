@@ -616,6 +616,7 @@ tune19:
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
+		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
 		--num_repeats=25 \
@@ -630,6 +631,7 @@ tune20:
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
 		--change=60 \
+		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
 		--num_repeats=25 \
@@ -694,6 +696,7 @@ tune23:
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
 		--change=1210 \
+		--metric='total_R' \
 		--num_episodes=2420 \
 		--num_samples=100 \
 		--num_repeats=25 \
@@ -709,6 +712,7 @@ tune24:
 		--env_name1="BanditUniform121" \
 		--env_name2="BanditChange121" \
 		--change=1210 \
+		--metric='total_R' \
 		--num_episodes=2420 \
 		--num_samples=100 \
 		--num_repeats=25 \
