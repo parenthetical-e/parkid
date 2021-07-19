@@ -110,6 +110,7 @@ def parkid(num_episodes=1000,
     # !
     total_R = 0.0
     change_R = 0.0
+    change_E = 0.0
     total_E = 0.0
     total_G = 0.0
     total_kid_R = 0.0
@@ -189,12 +190,14 @@ def parkid(num_episodes=1000,
         total_G += par_G
         if n >= change:
             change_R += max(par_R, kid_R)
+            change_E += max(par_E, kid_E)
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
         log.add_scalar("total_kid_R", total_kid_R, n)
         log.add_scalar("total_kid_H", total_kid_H, n)
         log.add_scalar("change_R", change_R, n)
+        log.add_scalar("change_E", change_E, n)
         tie = 0
         if actor.tied:
             tie = 1
@@ -309,6 +312,7 @@ def parpar(
     # !
     total_R = 0.0
     change_R = 0.0
+    change_E = 0.0
     total_E = 0.0
     total_G = 0.0
     for n in range(num_episodes):
@@ -390,10 +394,12 @@ def parpar(
         total_G += max(par_G, alt_G)
         if n >= change:
             change_R += max(par_R, alt_R)
+            change_E += max(par_E, alt_E)
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
         log.add_scalar("change_R", change_R, n)
+        log.add_scalar("change_E", change_E, n)
         tie = 0
         if actor.tied:
             tie = 1
