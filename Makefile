@@ -701,9 +701,8 @@ tune23:
 		--num_samples=100 \
 		--num_repeats=25 \
 		--num_processes=40 \
-		--par_boredom='(loguniform, 1e-4, 1e-1)' \
-		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
-		--set_point='(uniform, 1, 2420)'  
+		--par_boredom='(loguniform, 1e-6, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-6, 1e-1)' 
 
 # parpar
 tune24: 
