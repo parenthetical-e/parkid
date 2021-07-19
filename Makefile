@@ -648,7 +648,7 @@ tune20:
 # parkid
 # Sweep par_boredom
 tune21: 
-	python parkid/run/tune_change.py $(DATA_PATH)/tune21 \
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune21 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -666,7 +666,7 @@ tune21:
 
 # parpar
 tune22: 
-	python parkid/run/tune_change.py $(DATA_PATH)/tune22 \
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune22 \
 		--model_name='parpar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
