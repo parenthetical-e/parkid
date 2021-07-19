@@ -1,0 +1,338 @@
+---
+title: "Analyze exps: 17 and 18 - some tuned parkid results (tune14)"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(ggplot2)
+library(ggpubr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/exp17-18/"
+dir.create(img_path)
+```
+
+# Fig. Exploration 
+## Load data (task 1)
+```{r, message=FALSE}
+# -------------------------------------------------------------
+# User def
+task_name <- "change_bandits"
+num_episodes <- 120
+run_codes <- 1:100
+num_arms <- 4
+
+exp_names <- c("exp17", "exp18")
+agent_names <- c("ParKid", "ParPar")
+file_names <-
+  c(
+    "par_action",
+    "par_policy",
+    "alt_action",
+    "alt_policy",
+    "kid_action",
+    "kid_policy",
+    "par_score_E",
+    "total_R",
+    "change_R",
+    "change_E",
+    "total_E",
+    "total_G",
+    'best',
+    'p_opt'
+  )
+
+# Init
+E_bias <- log(num_arms) * num_arms
+
+# !
+results <- NULL
+for (i in 1:length(exp_names)) {
+  # Load
+  exp_name <- exp_names[i]
+  agent_name <- agent_names[i]
+  tmp <- load_result2(exp_name, c(0), run_codes, file_names,
+                     n_max = num_episodes + 1)
+  # Add metadata
+  tmp$exp <- exp_name
+  tmp$agent <- agent_name
+  tmp$task <- task_name
+  tmp$num_episodes <- num_episodes
+  # Join
+  results <- bind_rows(results, tmp)
+}
+
+# clean
+rm(tmp,
+   agent_names,
+   agent_name,
+   E_bias,
+   exp_name,
+   exp_names,
+   file_names,
+   i)
+```
+
+# Totals
+## Box
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", tag="") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_E)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", tag="") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+$ Total
+## Jitter only
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.6) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_E)) +
+  geom_jitter(color="mediumpurple", width=0.2, size=0.4, alpha=0.6) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+## Box only
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = FALSE) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_E)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = FALSE, color="mediumpurple") +
+  # geom_jitter(, width=0.2, size=0.4, alpha=0.6) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+
+## Violin only
+- Center dot is the mean
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_violin(width=0.4, outlier.shape = NA, notch = FALSE) +
+  stat_summary(fun.y=mean, geom="point", shape=16, size=2) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_E)) +
+  geom_violin(width=0.4, outlier.shape = NA, notch = FALSE, color="mediumpurple") +
+  stat_summary(fun.y=mean, geom="point", shape=16, size=2, color="mediumpurple") +
+  # geom_jitter(, width=0.2, size=0.4, alpha=0.6) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+
+# Total after change
+## Box
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            change_E=last(change_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", tag="") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            change_E=last(change_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_E)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", tag="") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+## Violin only
+- Center dot is the mean
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            change_E=last(change_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_violin(width=0.4, outlier.shape = NA, notch = FALSE) +
+  stat_summary(fun.y=mean, geom="point", shape=16, size=2) +
+  theme_classic2() +
+  # lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            change_E=last(change_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_E)) +
+  geom_violin(width=0.4, outlier.shape = NA, notch = FALSE, color="mediumpurple") +
+  stat_summary(fun.y=mean, geom="point", shape=16, size=2, color="mediumpurple") +
+  # geom_jitter(, width=0.2, size=0.4, alpha=0.6) +
+  theme_classic2() +
+  # lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
