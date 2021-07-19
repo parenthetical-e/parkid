@@ -611,7 +611,7 @@ exp18:
 # 
 # Tune sweep for BanditUniform4 -- all sensible params
 tune19: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune19 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune19 \
 		--model_name='parkid' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
@@ -625,7 +625,7 @@ tune19:
 		--set_point='(uniform, 1, 120)'  
 
 tune20: 
-	python parkid/run/tune_change.py random $(DATA_PATH)/tune20 \
+	python parkid/run/tune_change.py $(DATA_PATH)/tune20 \
 		--model_name='parpar' \
 		--env_name1="BanditUniform4" \
 		--env_name2="BanditChange4" \
