@@ -182,13 +182,13 @@ def parkid(num_episodes=1000,
         log.add_scalar("kid_score_H", kid_H, n)
         log.add_scalar("kid_value_E", kid_wsls.critic_E(kid_action), n)
         log.add_scalar("kid_value_R", kid_wsls.critic_R(kid_action), n)
-        total_E += par_E
-        total_R += par_R
+        total_E += max(par_E, kid_E)
+        total_R += max(par_R, kid_R)
         total_kid_R += kid_R
         total_kid_H += kid_H
         total_G += par_G
-        if n < change:
-            change_R += par_R  #+ kid_R
+        if n >= change:
+            change_R += max(par_R, kid_R)
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
@@ -385,11 +385,11 @@ def parpar(
         log.add_scalar("alt_score_R", alt_R, n)
         log.add_scalar("alt_value_E", alt_wsls.critic_E(alt_action), n)
         log.add_scalar("alt_value_R", alt_wsls.critic_R(alt_action), n)
-        total_E += (par_E + alt_E) / 2
-        total_R += (par_R + alt_R) / 2
-        total_G += (par_G + alt_G) / 2
-        if n < change:
-            change_R += (par_R + alt_R) / 2
+        total_E += max(par_E, alt_E)
+        total_R += max(par_R, alt_R)
+        total_G += max(par_G, alt_G)
+        if n >= change:
+            change_R += max(par_R, alt_R)
         log.add_scalar("total_G", total_G, n)
         log.add_scalar("total_E", total_E, n)
         log.add_scalar("total_R", total_R, n)
@@ -397,6 +397,7 @@ def parpar(
         tie = 0
         if actor.tied:
             tie = 1
+
         log.add_scalar("alt_ties", tie, n)
     log.close()
 
