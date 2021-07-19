@@ -107,7 +107,7 @@ tmp %>%
   geom_jitter(width=0.2, size=0.4, alpha=0.2) +
   theme_classic2() +
   lims(y=c(0, 80)) +
-  labs(x="", y="Reward (R)", tag="a.") -> p1
+  labs(x="", y="Reward (R)", tag="") -> p1
 
 # E
 results %>% 
@@ -122,7 +122,47 @@ tmp %>%
   geom_jitter(width=0.2, size=0.4, alpha=0.2) +
   theme_classic2() +
   lims(y=c(4, 8)) +
-  labs(x="", y="Info. value (E)", tag="b.") -> p2
+  labs(x="", y="Info. value (E)", tag="") -> p2
+
+
+p <- p1 + p2 
+name <- paste(img_path, "total_R_E", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
+print(p)
+```
+
+# Total change
+## Box
+```{r, fig.width=1.8, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  lims(y=c(0, 80)) +
+  labs(x="", y="Reward (R)", tag="") -> p1
+
+# E
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_E=last(total_E),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_E)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  lims(y=c(4, 8)) +
+  labs(x="", y="Info. value (E)", tag="") -> p2
 
 
 p <- p1 + p2 
