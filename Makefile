@@ -659,7 +659,7 @@ tune21:
 		--num_repeats=25 \
 		--num_processes=40 \
 		--master_seed=42 \
-		--par_boredom='(loguniform, 1e-5, 1e-1)' \
+		--par_boredom='(linspace, 1e-5, 1e-1)' \
 		--kid_boredom=0.0001 \
 		--set_point=60 \
 		--share=0.0
@@ -677,7 +677,7 @@ tune22:
 		--num_repeats=25 \
 		--num_processes=40 \
 		--master_seed=42 \
-		--par_boredom='(loguniform, 1e-5, 1e-1)' 
+		--par_boredom='(linspace, 1e-5, 1e-1)' 
 
 
 # --------------------------------------------------------------------------
