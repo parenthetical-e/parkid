@@ -619,7 +619,7 @@ tune19:
 		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' \
 		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
@@ -634,7 +634,7 @@ tune20:
 		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
 
