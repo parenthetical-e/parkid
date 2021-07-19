@@ -603,8 +603,120 @@ exp18:
 			--nice 19 --delay 0 --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --log_dir=$(DATA_PATH)/exp18/param0/run{1} --master_seed={1}' ::: {0..100} 
 
-# todo - 
-# rerun tune for 4 and crosscheck
-# rerun tune for 121 and crosschecl
+
+# --------------------------------------------------------------------------
+# 7-19-2021
+# c7e3f47 
+# ***Used to generate data for current biology draft***
+# 
+# Tune sweep for BanditUniform4 -- all sensible params
+tune19: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune19 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 120)'  
+
+tune20: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune20 \
+		--model_name='parpar' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' 
+
+
+# --------------------------------------------------------------------------
+# 7-19-2021
+# c7e3f47 
+# # ***Used to generate data for current biology draft***
+
+# More refined tune to better seperate parkid from parpar, looking 
+# aat only parent boredom
+
+# parkid
+# Sweep par_boredom
+tune21: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune21 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--master_seed=42 \
+		--par_boredom='(loguniform, 1e-5, 1e-1)' \
+		--kid_boredom=0.0001 \
+		--set_point=60 \
+		--share=0.0
+
+# parpar
+tune22: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune22 \
+		--model_name='parpar' \
+		--env_name1="BanditUniform4" \
+		--env_name2="BanditChange4" \
+		--change=60 \
+		--metric='total_R' \
+		--num_episodes=120 \
+		--num_samples=200 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--master_seed=42 \
+		--par_boredom='(loguniform, 1e-5, 1e-1)' 
+
+
+# --------------------------------------------------------------------------
+# 7-19-2021
+# c7e3f47 
+# # ***Used to generate data for current biology draft***
+
+# Tune sweep for BanditUniform121 -- all sensible params
+
+# parkid
+tune23: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune23 \
+		--model_name='parkid' \
+		--env_name1="BanditUniform121" \
+		--env_name2="BanditChange121" \
+		--change=1210 \
+		--num_episodes=2420 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-4, 1e-1)' \
+		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--set_point='(uniform, 1, 2420)'  
+
+# parpar
+tune24: 
+	python parkid/run/tune_change.py random $(DATA_PATH)/tune24 \
+		--model_name='parpar' \
+		--env_name1="BanditUniform121" \
+		--env_name2="BanditChange121" \
+		--change=1210 \
+		--num_episodes=2420 \
+		--num_samples=100 \
+		--num_repeats=25 \
+		--num_processes=40 \
+		--par_boredom='(loguniform, 1e-6, 1e-1)' 
+
+
+# --------------------------------------------------------------------------
+# TODO
 # rereun top-1 fop 121 and cross check
 # make value extraction notebook.
