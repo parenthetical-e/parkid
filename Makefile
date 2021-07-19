@@ -574,3 +574,29 @@ exp16:
 			--joblog '$(DATA_PATH)/exp16.log' \
 			--nice 19 --delay 0 --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --log_dir=$(DATA_PATH)/exp16/param0/run{1} --master_seed={1}' ::: {0..100} 
+
+
+# --------------------------------------------------------------------------
+# 7-19-2021
+# 9efed95 
+#
+# ***Used to generate data for current biology draft***
+#
+# - Changes from grant results given by exp15/16: 
+# I fixed/unified the way total rewards are calculated. This is new was is more
+# fair. 
+#
+# Run the same simulations as exp15/16 (above) to make sure nothinh 
+# inportant changed the results I expect now.
+
+exp17: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp17.log' \
+			--nice 19 --delay 0 --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --kid_boredom=0.0001 --set_point=60 --share=0.0 --log_dir=$(DATA_PATH)/exp17/param0/run{1} --master_seed={1}' ::: {0..100} 
+
+exp18: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp18.log' \
+			--nice 19 --delay 0 --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --log_dir=$(DATA_PATH)/exp18/param0/run{1} --master_seed={1}' ::: {0..100} 
