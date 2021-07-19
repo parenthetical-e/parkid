@@ -578,16 +578,18 @@ exp16:
 
 # --------------------------------------------------------------------------
 # 7-19-2021
-# 9efed95 
+# c7e3f47 
 #
 # ***Used to generate data for current biology draft***
 #
-# - Changes from grant results given by exp15/16: 
-# I fixed/unified the way total rewards are calculated. This is new was is more
+# Changes from grant results given by exp15/16: 
+# - I fixed/unified the way total rewards are calculated. This is new was is more
 # fair. 
 #
 # Run the same simulations as exp15/16 (above) to make sure nothinh 
 # inportant changed the results I expect now.
+# 
+# RESULTS: overall the results are consistent. From this analysis it is clear that sometimes, by change, parpar finds the perfect arm after the change. This give it near perfect scores some of the time. Not often enough. Its avg reward is still lower. And much lower is these lucky guesses (?) are removed.
 
 exp17: 
 	parallel -j 4 \
@@ -600,3 +602,9 @@ exp18:
 			--joblog '$(DATA_PATH)/exp18.log' \
 			--nice 19 --delay 0 --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parpar --env_name1=BanditUniform4 --env_name2=BanditChange4 --num_episodes=120 --change=60 --par_boredom=0.025 --log_dir=$(DATA_PATH)/exp18/param0/run{1} --master_seed={1}' ::: {0..100} 
+
+# todo - 
+# rerun tune for 4 and crosscheck
+# rerun tune for 121 and crosschecl
+# rereun top-1 fop 121 and cross check
+# make value extraction notebook.
