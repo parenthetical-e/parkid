@@ -3,6 +3,25 @@ DATA_PATH=/Users/qualia/Code/parkid/data
 # DATA_PATH=/home/stitch/Code/parkid/data/
 
 # --------------------------------------------------------------------------
+# Test recipes
+#
+# Should run ok when run from HEAD.
+test1: 
+	-rm -rf $(DATA_PATH)/test1/*
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp1.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=120  --change=60 --env_name1=BanditUniform4 --env_name2=BanditChange4 --par_boredom=0.01 --kid_boredom=0.0 --set_point=None --lr_R=0.1 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..5} 
+
+test2: 
+	-rm -rf $(DATA_PATH)/test2/*
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp2.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=120  --change=60 --env_name1=BanditUniform4 --env_name2=BanditChange4 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..5} 
+	
+
+# --------------------------------------------------------------------------
 # 11-30-20
 # 9c1a244
 #
