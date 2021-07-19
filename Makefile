@@ -658,7 +658,7 @@ tune21:
 		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--master_seed=42 \
 		--par_boredom='(linspace, 1e-5, 1e-1)' \
@@ -676,7 +676,7 @@ tune22:
 		--metric='total_R' \
 		--num_episodes=120 \
 		--num_samples=200 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--master_seed=42 \
 		--par_boredom='(linspace, 1e-5, 1e-1)' 
