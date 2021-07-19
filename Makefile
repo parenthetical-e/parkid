@@ -5,7 +5,7 @@ DATA_PATH=/Users/qualia/Code/parkid/data
 # --------------------------------------------------------------------------
 # Test recipes
 #
-# Should run ok when run from HEAD.
+# Should run ok when run from main/HEAD.
 test1: 
 	-rm -rf $(DATA_PATH)/test1/*
 	parallel -j 4 \
