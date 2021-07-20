@@ -699,7 +699,7 @@ tune23:
 		--metric='total_R' \
 		--num_episodes=2420 \
 		--num_samples=100 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--par_boredom='(loguniform, 1e-6, 1e-1)' \
 		--kid_boredom='(loguniform, 1e-6, 1e-1)' 
@@ -714,7 +714,7 @@ tune24:
 		--metric='total_R' \
 		--num_episodes=2420 \
 		--num_samples=100 \
-		--num_repeats=25 \
+		--num_repeats=100 \
 		--num_processes=40 \
 		--par_boredom='(loguniform, 1e-6, 1e-1)' 
 
