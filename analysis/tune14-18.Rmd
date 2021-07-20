@@ -161,6 +161,52 @@ result %>%
       labs(x = "Rank", y = "Reward (R)", title="Overall performance") 
 ```
 
+# Plot ranked - top 25
+## Overplot
+```{r, fig.width=2.5, fig.height=1.2}
+result %>%
+  filter(index < 25) %>%
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  # lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "mediumpurple3",
+      "mediumpurple2",
+      "mediumpurple1",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Rank", y = "Reward (R)", title="Top N performance") 
+```
+
+
 # Plot kid's useful?
 ```{r, fig.width=3, fig.height=1.2}
 result %>%

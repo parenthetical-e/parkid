@@ -92,9 +92,8 @@ rm(tmp,
    i)
 ```
 
-# Totals
-## Box
-```{r, fig.width=1.8, fig.height=1.2}
+# Total reward
+```{r, fig.width=1, fig.height=1.2}
 results %>% 
   group_by(agent, exp, run) %>% 
   summarise(total_R=last(total_R),
@@ -103,11 +102,66 @@ results %>%
   ungroup() -> tmp
 
 tmp %>% 
-  ggplot(aes(x=agent, y=total_R)) +
+  ggplot(aes(x=agent, y=total_R, color=agent)) +
   geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
   geom_jitter(width=0.2, size=0.4, alpha=0.2) +
   theme_classic2() +
-  # lims(y=c(0, 80)) +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.position = "none") +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+  )) +
+  labs(x="", y="Total reward", title="Best model", tag="") -> p1
+
+p1
+name <- paste(img_path, "total_R", sep="")
+ggsave(paste(name, ".png", sep=""), plot=p1, width = 1.6*2, height = 1*2)
+print(p1)
+```
+
+
+# Totals - both
+## Box
+```{r, fig.width=1.4, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R),
+            total_G=last(total_G)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R, color=agent)) +
+  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
+  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.position = "none") +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+  )) +
   labs(x="", y="Reward (R)", tag="") -> p1
 
 # E
@@ -118,11 +172,26 @@ results %>%
   ungroup() -> tmp
 
 tmp %>% 
-  ggplot(aes(x=agent, y=total_E)) +
+  ggplot(aes(x=agent, y=total_E, color=agent)) +
   geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
   geom_jitter(width=0.2, size=0.4, alpha=0.2) +
   theme_classic2() +
-  # lims(y=c(4, 8)) +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.position = "none") +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+  )) +
   labs(x="", y="Info. value (E)", tag="") -> p2
 
 
@@ -184,7 +253,7 @@ tmp %>%
   geom_boxplot(width=0.4, outlier.shape = NA, notch = FALSE) +
   theme_classic2() +
   # lims(y=c(0, 80)) +
-  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
+  labs(x="", y="Total rewaard") -> p1
 
 # E
 results %>% 
@@ -199,7 +268,7 @@ tmp %>%
   # geom_jitter(, width=0.2, size=0.4, alpha=0.6) +
   theme_classic2() +
   # lims(y=c(4, 8)) +
-  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
+  labs(x="", y="Total info. value") -> p2
 
 
 p <- p1 + p2 
