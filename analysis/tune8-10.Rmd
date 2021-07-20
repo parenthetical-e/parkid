@@ -65,7 +65,7 @@ result$agent <- factor(result$agent, levels = agent_names)
 # Plot ranked
 ```{r, fig.width=1.6, fig.height=1}
 result %>% 
-  # filter(index < 100) %>%
+  filter(index < 100) %>%
   ggplot(aes(x=index, y=change_R, color=agent)) +
   geom_point(size=0.6, alpha=0.6) +
   geom_line(size=0.6, alpha=0.6) +
