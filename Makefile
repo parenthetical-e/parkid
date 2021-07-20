@@ -11,14 +11,14 @@ test1:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp1.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.01 --kid_boredom=0.0 --set_point=None --lr_R=0.1 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..5} 
+			'python parkid/run/change_bandits.py parkid --num_episodes=120  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=2 --set_point=20 --lr_R=0.6 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..50} 
 
 test2: 
 	-rm -rf $(DATA_PATH)/test2/*
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp2.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.001 --lr_R=0.1 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..5} 
+			'python parkid/run/change_bandits.py parpar --num_episodes=120  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..50} 
 	
 
 # --------------------------------------------------------------------------
@@ -735,14 +735,16 @@ tune26:
 		--change=40 \
 		--metric='total_R' \
 		--stat='median' \
-		--num_episodes=80 \
-		--num_samples=500 \
+		--num_episodes=120 \
+		--num_samples=100 \
 		--num_repeats=100 \
 		--num_processes=40 \
-		--set_point=40 \
-		--lr_R='(uniform, 0.1, 0.9)' \
-		--par_boredom='(loguniform, 1e-4, 1e-1)' \
-		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
+		--lr_R=0.6 \
+		--kid_boredom=0.0 \
+		--set_point=20 \
+		--kid_scale='(uniform, 0.25, 5)' \
+		--par_boredom='(loguniform, 0.0001, 0.99)' 
+		
 
 tune27: 
 	python parkid/run/tune_change.py $(DATA_PATH)/tune27 \
@@ -752,12 +754,12 @@ tune27:
 		--change=40 \
 		--metric='total_R' \
 		--stat='median' \
-		--num_episodes=80 \
-		--num_samples=500 \
+		--num_episodes=120 \
+		--num_samples=100 \
 		--num_repeats=100 \
 		--num_processes=40 \
-		--lr_R='(uniform, 0.1, 0.9)' \
-		--par_boredom='(loguniform, 1e-4, 1e-1)' 
+		--lr_R=0.6 \
+		--par_boredom='(loguniform, 0.0001, 0.99)' 
 
 # TODO
 # rereun top-1 fop 121 and cross check
