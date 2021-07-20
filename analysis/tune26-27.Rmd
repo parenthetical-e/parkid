@@ -1,5 +1,5 @@
 ---
-title: "Tune 13-24 : parkid v parpar - broad and focused HP sweeps, on BanditUniform121"
+title: "Tune 26-27 : parkid v parpar - broad sweeps, on Bandit...Monster4"
 output: html_notebook
 ---
 
@@ -28,23 +28,22 @@ source("utils.R")
 # Paths
 ```{r, message=FALSE}
 data_path <- "~/Code/parkid/data/"
-img_path <- "~/Code/parkid/analysis/img/tune23-24/"
+img_path <- "~/Code/parkid/analysis/img/tune26-27/"
 dir.create(img_path)
 ```
 
 # Load
 ```{r, message=FALSE}
 # -------------------------------------------------------------
-num_episodes <- 2420
+num_episodes <- 80
 
 # The overestimate due to E0
-num_arms <- 121
+num_arms <- 4
 agent_names <- c("ParKid", "ParPar")
 
-# broad (loguniform)
 rank_names1 <- c(
-  "tune23_sorted.csv",
-  "tune24_sorted.csv"
+  "tune26_sorted.csv",
+  "tune27_sorted.csv"
 )
 result1 <- NULL
 for (i in 1:length(rank_names1)) {
@@ -60,8 +59,8 @@ result1$agent <- factor(result1$agent, levels = agent_names)
 ```
 
 # Result 1
-## Overplot
-```{r, fig.width=2.5, fig.height=1.2}
+## Ranked ribbon
+```{r, fig.width=5, fig.height=1.2}
 result1 %>%
   # filter(index < 25) %>%
   ggplot(aes(x = index, y = total_R, color = agent)) +
@@ -73,7 +72,7 @@ result1 %>%
       fill = agent,
       group = agent
     ),
-    alpha = 0.3,
+    alpha = 0.1,
     color = NA
   ) +
   geom_line(size = 1, alpha = 1) +
@@ -95,9 +94,49 @@ result1 %>%
       "steelblue4"
     )
     ) +
-      labs(x = "Rank", y = "Total reward", title="All models") 
+      labs(x = "Rank", y = "Reward (R)", title="Overall performance") +
+  facet_grid(.~agent)
+```
+
+## Overplot
+```{r, fig.width=2.5, fig.height=1.2}
+result1 %>%
+  # filter(index < 25) %>%
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  # lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Rank", y = "Reward (R)", title="Overall performance") 
 
 ```
+
 ## Density
 ```{r, fig.width=2.5, fig.height=1.2}
 result1 %>%
@@ -144,7 +183,6 @@ result1 %>%
       "mediumpurple4",
       "steelblue4"
   )) +
-  # lims(x=c(60, 120)) +
   labs(x="Total reward", y="Count", title="All models") +
   facet_grid(agent~.)
 ```
