@@ -35,7 +35,7 @@ dir.create(img_path)
 
 # Fig. Exploration 
 ## Load data (task 1)
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 # -------------------------------------------------------------
 # User def
 task_name <- "change_bandits"
@@ -55,6 +55,13 @@ file_names <-
     "kid_action",
     "kid_policy",
     "par_score_E",
+    "par_score_R",
+    "kid_score_E",
+    "kid_score_R",
+    "par_value_E",
+    "par_value_R",
+    "kid_value_E",
+    "kid_value_R",
     "total_R",
     "change_R",
     "total_E",
@@ -95,12 +102,13 @@ rm(tmp,
 ```
 
 # Behave
-## kids
 ```{r, fig.width=2.5, fig.height=1.6}
 results %>% 
   filter(agent=="ParKid") %>% 
+  filter(run <= 5) %>% 
   ggplot(aes(x=global_step, y=kid_action+1)) +
   geom_point(size=1, alpha=1, color="dodgerblue3") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
   facet_grid(run~agent) +
   labs(x="Time", y="Action", title="Kid") +
   theme_pubr(base_size = 8, legend = "none") +
@@ -108,8 +116,10 @@ results %>%
         strip.text.y = element_blank()) -> kid1
 
 results %>% 
+  filter(run <= 5) %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
   geom_point(size=1, alpha=1, color="gray27") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
   facet_grid(run~agent) +
   labs(x="Time", y="Action", title="Parent") +
   theme_pubr(base_size = 8, legend = "none") +
@@ -119,124 +129,85 @@ results %>%
 kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
 ```
 
-## Parents
-```{r, fig.width=1.4, fig.height=2}
+# Value timecourses
+## Reward
+```{r, fig.width=2.5, fig.height=1.6}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=kid_value_R)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward value", title="Kid") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
 
+results %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=par_value_R)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward value", title="Parent") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
 ```
-# Totals
-## Box
-```{r, fig.width=1.8, fig.height=1.2}
+
+## Info val
+```{r, fig.width=2.5, fig.height=1.6}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=kid_value_E)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value", title="Kid") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=par_value_E)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value", title="Parent") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+# Total rewards
+## Scatter w/ mean
+```{r, fig.width=1.7, fig.height=1.2}
 results %>% 
   group_by(agent, exp, run) %>% 
   summarise(total_R=last(total_R),
-            change_R=last(change_R),
-            total_G=last(total_G)) %>% 
+            change_R=last(change_R)) %>% 
   ungroup() -> tmp
 
 tmp %>% 
   ggplot(aes(x=agent, y=total_R)) +
-  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
-  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  geom_jitter(width=0.2, size=0.4, alpha=1) +
+  stat_summary(fun.y=mean, geom="point", shape=95, size=5, color="darkgrey") +
   theme_classic2() +
   lims(y=c(0, 80)) +
-  labs(x="", y="Reward (R)", tag="") -> p1
-
-# E
-results %>% 
-  group_by(agent, exp, run) %>% 
-  summarise(total_E=last(total_E),
-            total_G=last(total_G)) %>% 
-  ungroup() -> tmp
-
-tmp %>% 
-  ggplot(aes(x=agent, y=total_E)) +
-  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
-  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
-  theme_classic2() +
-  lims(y=c(4, 8)) +
-  labs(x="", y="Info. value (E)", tag="") -> p2
-
-
-p <- p1 + p2 
-name <- paste(img_path, "total_R_E", sep="")
-ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
-print(p)
-```
-
-# Total change
-## Box
-```{r, fig.width=1.8, fig.height=1.2}
-results %>% 
-  group_by(agent, exp, run) %>% 
-  summarise(total_R=last(total_R),
-            change_R=last(change_R),
-            total_G=last(total_G)) %>% 
-  ungroup() -> tmp
+  labs(x="", y="Total reward", tag="") -> p1
 
 tmp %>% 
   ggplot(aes(x=agent, y=change_R)) +
-  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
-  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
+  geom_jitter(width=0.2, size=0.4, alpha=1) +
+  stat_summary(fun.y=mean, geom="point", shape=95, size=5, color="darkgrey") +
   theme_classic2() +
   lims(y=c(0, 80)) +
-  labs(x="", y="Reward (R)", tag="") -> p1
+  labs(x="", y="After change", tag="") -> p2
 
-# E
-results %>% 
-  group_by(agent, exp, run) %>% 
-  summarise(total_E=last(total_E),
-            total_G=last(total_G)) %>% 
-  ungroup() -> tmp
-
-tmp %>% 
-  ggplot(aes(x=agent, y=total_E)) +
-  geom_boxplot(width=0.4, outlier.shape = NA, notch = TRUE) +
-  geom_jitter(width=0.2, size=0.4, alpha=0.2) +
-  theme_classic2() +
-  lims(y=c(4, 8)) +
-  labs(x="", y="Info. value (E)", tag="") -> p2
-
-
-p <- p1 + p2 
-name <- paste(img_path, "total_R_E", sep="")
-ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
-print(p)
+p1 + p2
 ```
-
-## Jitter
-```{r, fig.width=1.8, fig.height=1.2}
-results %>% 
-  group_by(agent, exp, run) %>% 
-  summarise(total_R=last(total_R),
-            change_R=last(change_R),
-            total_G=last(total_G)) %>% 
-  ungroup() -> tmp
-
-tmp %>% 
-  ggplot(aes(x=agent, y=total_R)) +
-  geom_jitter(width=0.2, size=0.4, alpha=0.6) +
-  theme_classic2() +
-  lims(y=c(0, 80)) +
-  labs(x="", y="Reward (R)", title="Total", tag="a.") -> p1
-
-# E
-results %>% 
-  group_by(agent, exp, run) %>% 
-  summarise(total_E=last(total_E),
-            total_G=last(total_G)) %>% 
-  ungroup() -> tmp
-
-tmp %>% 
-  ggplot(aes(x=agent, y=total_E)) +
-  geom_jitter(color="mediumpurple", width=0.2, size=0.4, alpha=0.6) +
-  theme_classic2() +
-  lims(y=c(4, 8)) +
-  labs(x="", y="Info. value (E)", title="Total", tag="b.") -> p2
-
-
-p <- p1 + p2 
-name <- paste(img_path, "total_R_E", sep="")
-ggsave(paste(name, ".png", sep=""), plot=p, width = 1.6*2, height = 1*2)
-print(p)
-```
-
