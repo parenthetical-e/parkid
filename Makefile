@@ -739,6 +739,7 @@ tune26:
 		--num_repeats=100 \
 		--num_processes=49 \
 		--set_point=40 \
+		--lr_R='(uniform, 0.1, 0.9)' \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' \
 		--kid_boredom='(loguniform, 1e-4, 1e-1)' \
 
@@ -753,6 +754,7 @@ tune27:
 		--num_samples=100 \
 		--num_repeats=100 \
 		--num_processes=40 \
+		--lr_R='(uniform, 0.1, 0.9)' \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
 
 # TODO
