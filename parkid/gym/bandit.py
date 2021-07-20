@@ -152,9 +152,9 @@ class BanditStaticMonster4(BanditEnv):
     11 (2019).
     """
     def __init__(self):
+        self.num_arms = 4
         best = 1
         self.best = [best]
-        self.num_arms = 4
 
         # Generate static/intial p_dist
         p_dist = [0.6, 0.2, 0.3, 0.1]
@@ -178,9 +178,9 @@ class BanditDynamicMonster4(BanditEnv):
     11 (2019).
     """
     def __init__(self):
-        best = 4
-        self.best = [best]
         self.num_arms = 4
+        best = 3
+        self.best = [best]
 
         # Generate the changed/dynamic p_dist
         p_dist = [0.6, 0.2, 0.3, 0.8]
