@@ -84,7 +84,7 @@ def tune(name,
          num_samples=10,
          num_processes=1,
          metric="change_R",
-         verbose=False,
+         stat="median",
          master_seed=None,
          **config_kwargs):
     """Tune hyperparameters for change_bandits."""
@@ -184,8 +184,15 @@ def tune(name,
     sorted_configs = {}
     for i, trial in enumerate(get_sorted_trials(trials, metric)):
         sorted_configs[i] = trial["config"]
-        sorted_configs[i].update({metric: np.median(trial["scores"])})
-        sorted_configs[i].update({"mad_" + metric: mad(trial["scores"])})
+        if stat == "median":
+            sorted_configs[i].update({metric: np.median(trial["scores"])})
+            sorted_configs[i].update({"mad_" + metric: mad(trial["scores"])})
+        elif stat == "mean":
+            sorted_configs[i].update({metric: np.mean(trial["scores"])})
+            sorted_configs[i].update(
+                {"std_" + metric: np.std(trial["scores"])})
+        else:
+            raise ValueError("stat must be median or mean")
 
     save_csv(sorted_configs, filename=os.path.join(path, name + "_sorted.csv"))
 
