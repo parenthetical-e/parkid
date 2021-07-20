@@ -30,6 +30,7 @@ def parkid(num_episodes=1000,
            par_boredom=0.0,
            kid_boredom=0.0,
            share=0.0,
+           kid_scale=1,
            set_point=None,
            lr_R=.1,
            share_update=False,
@@ -126,7 +127,7 @@ def parkid(num_episodes=1000,
 
         # ---
         # PAR move (always first)
-        actor, critic, par_policy = par_wsls(par_E + kid_E, par_R)
+        actor, critic, par_policy = par_wsls(par_E + kid_scale * kid_E, par_R)
         par_action = actor(list(critic.model.values()))
         par_state, par_R, _, _ = env.step(par_action)
 
@@ -136,7 +137,6 @@ def parkid(num_episodes=1000,
         kid_state, kid_R, _, _ = env.step(kid_action)
 
         kid_H = R_homeostasis(kid_R + (par_R * share), total_kid_R, set_point)
-
         par_G = estimate_regret(all_actions, par_action, critic)
         kid_G = estimate_regret(all_actions, kid_action, critic)
 
