@@ -144,6 +144,58 @@ class BanditChange4(BanditEnv):
         return [seed]
 
 
+class BanditStaticMonster4(BanditEnv):
+    """A 'static' 4 armed bandit, based on Sumner et al.
+    
+    Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        best = 1
+        self.best = [best]
+        self.num_arms = 4
+
+        # Generate static/intial p_dist
+        p_dist = [0.6, 0.2, 0.3, 0.1]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
+class BanditDynamicMonster4(BanditEnv):
+    """A 'dynamic' 4 armed bandit, based on Sumner et al.
+    
+    Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        best = 4
+        self.best = [best]
+        self.num_arms = 4
+
+        # Generate the changed/dynamic p_dist
+        p_dist = [0.6, 0.2, 0.3, 0.8]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
 class BanditUniform121(BanditEnv):
     """A 121 armed bandit."""
     def __init__(self, p_min=0.1, p_max=0.3, p_best=0.6, best=54):
