@@ -736,7 +736,7 @@ tune26:
 		--metric='total_R' \
 		--stat='median' \
 		--num_episodes=80 \
-		--num_samples=100 \
+		--num_samples=500 \
 		--num_repeats=100 \
 		--num_processes=40 \
 		--set_point=40 \
@@ -753,7 +753,7 @@ tune27:
 		--metric='total_R' \
 		--stat='median' \
 		--num_episodes=80 \
-		--num_samples=100 \
+		--num_samples=500 \
 		--num_repeats=100 \
 		--num_processes=40 \
 		--lr_R='(uniform, 0.1, 0.9)' \
