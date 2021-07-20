@@ -29,15 +29,15 @@ data_path <- "/Volumes/Data/infomercial/data"
 
 # Task 1 
 ## orignal
-```{r, fig.width=1.2, fig.height=0.6}
-best <- 3
+```{r, fig.width=1.2, fig.height=0.5}
+best <- 1
 best_choice = rep(0, 4)
 best_choice[best] <- 1
 
 classic <- data.frame(
   best=best_choice,
   choice=1:4,
-  payout=c(0.22, 0.23, 0.6, 0.11))
+  payout=c(0.6, 0.2, 0.3, 0.1))
 
 # Result
 classic %>% 
@@ -46,7 +46,7 @@ classic %>%
   lims(x=c(0, 2)) +
   scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
   scale_fill_manual(values=c("darkgrey", "black")) +
-  labs(x="Choice", y="", title="Reward payout") +
+  labs(x="Action", y="Reward", title="Initial payout (40 trials)") +
   facet_wrap(choice~., nrow=1) +
   theme_pubr(base_size = 6, legend = "none") +
   theme(strip.background = element_blank()) +
@@ -61,21 +61,13 @@ classic %>%
 
 
 # ------------------------------------------------------------------------
-# task1 <- (p1 + plot_spacer() + plot_spacer()) + 
-  # plot_layout(widths=c(0.3, 0.3, 0.3)) +
-task2 <- (p1) +
-  plot_annotation(title = "Task 1 (original)")
-print(task2)
-
 # save
 name <- "img/task1a"
-ggsave(paste(name, ".pdf", sep=""), plot=task2, width = 1.2*2, height = 0.6*2)
-
-rm(p1)
+ggsave(paste(name, ".pdf", sep=""), plot=p1, width = 1.2*2, height = 0.6*2)
 ```
 
 ## change
-```{r, fig.width=1.2, fig.height=0.6}
+```{r, fig.width=1.2, fig.height=0.5}
 best <- 4
 best_choice = rep(0, 4)
 best_choice[best] <- 1
@@ -83,7 +75,7 @@ best_choice[best] <- 1
 classic <- data.frame(
   best=best_choice,
   choice=1:4,
-  payout=c(0.22, 0.23, 0.6, 0.99))
+  payout=c(0.6, 0.2, 0.3, 0.8))
 
 # Result
 classic %>% 
@@ -92,7 +84,7 @@ classic %>%
   lims(x=c(0, 2)) +
   scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
   scale_fill_manual(values=c("darkgrey", "black")) +
-  labs(x="Choice", y="", title="Reward payout") +
+  labs(x="Action", y="Reward", title="Changed (40 trials)") +
   facet_wrap(choice~., nrow=1) +
   theme_pubr(base_size = 6, legend = "none") +
   theme(strip.background = element_blank()) +
@@ -103,19 +95,14 @@ classic %>%
   theme(axis.line = element_blank()) +
   theme(panel.grid.major = element_blank()) +
   theme(panel.grid.minor = element_blank()) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p1
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p2
 
 
 # ------------------------------------------------------------------------
-# task1 <- (p1 + plot_spacer() + plot_spacer()) + 
-  # plot_layout(widths=c(0.3, 0.3, 0.3)) +
-task2 <- (p1) +
-  plot_annotation(title = "Task 1 (change)")
-print(task2)
-
-# save
+print(p2)
 name <- "img/task1b"
-ggsave(paste(name, ".pdf", sep=""), plot=task2, width = 1.2*2, height = 0.6*2)
-
-rm(p1)
+ggsave(paste(name, ".pdf", sep=""), plot=p2, width = 1.2*2, height = 0.6*2)
+```
+```{r, fig.width=1.2, fig.height=0.9}
+p1 / p2
 ```
