@@ -153,7 +153,7 @@ class BanditStaticMonster4(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 1
+        best = 0
         self.best = [best]
 
         # Generate static/intial p_dist
