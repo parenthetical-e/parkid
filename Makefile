@@ -753,7 +753,6 @@ tune27:
 		--num_samples=100 \
 		--num_repeats=100 \
 		--num_processes=40 \
-		--set_point=40 \
 		--par_boredom='(loguniform, 1e-4, 1e-1)' 
 
 # TODO
