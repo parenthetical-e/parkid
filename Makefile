@@ -734,7 +734,7 @@ tune26:
 		--env_name2="BanditDynamicMonster4" \
 		--change=40 \
 		--metric='total_R' \
-		--stat='mean' \
+		--stat='median' \
 		--num_episodes=80 \
 		--num_samples=100 \
 		--num_repeats=100 \
@@ -751,7 +751,7 @@ tune27:
 		--env_name2="BanditDynamicMonster4" \
 		--change=40 \
 		--metric='total_R' \
-		--stat='mean' \
+		--stat='median' \
 		--num_episodes=80 \
 		--num_samples=100 \
 		--num_repeats=100 \
