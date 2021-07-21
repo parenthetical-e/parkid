@@ -144,8 +144,8 @@ class BanditChange4(BanditEnv):
         return [seed]
 
 
-class BanditStaticMonster(BanditEnv):
-    """A 'static' 4 armed bandit, based on Sumner et al.
+class BanditStaticRegMonster(BanditEnv):
+    """The 'static' 4 armed bandit, based on Sumner et al.
     
     Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
     explore allows them to find information that adults miss. PsyArxiv h437v,
@@ -170,8 +170,8 @@ class BanditStaticMonster(BanditEnv):
         return [seed]
 
 
-class BanditDynamicMonster(BanditEnv):
-    """A 'dynamic' 4 armed bandit, based on Sumner et al.
+class BanditDynamicRegMonster(BanditEnv):
+    """The 'dynamic' 4 armed bandit, based on Sumner et al.
     
     Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
     explore allows them to find information that adults miss. PsyArxiv h437v,
