@@ -35,7 +35,7 @@ dir.create(img_path)
 # Load
 ```{r, message=FALSE}
 # -------------------------------------------------------------
-num_episodes <- 80
+num_episodes <- 120
 
 # The overestimate due to E0
 num_arms <- 4
@@ -60,45 +60,6 @@ result1$agent <- factor(result1$agent, levels = agent_names)
 
 # Result 1
 ## Ranked ribbon
-```{r, fig.width=5, fig.height=1.2}
-result1 %>%
-  # filter(index < 25) %>%
-  ggplot(aes(x = index, y = total_R, color = agent)) +
-  geom_point(size = 0.6, alpha = 0.6) +
-  geom_ribbon(
-    aes(
-      ymin = total_R - mad_total_R,
-      ymax = total_R + mad_total_R,
-      fill = agent,
-      group = agent
-    ),
-    alpha = 0.1,
-    color = NA
-  ) +
-  geom_line(size = 1, alpha = 1) +
-  theme_classic2() +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  # lims(y=c(0, 100)) +
-  scale_color_manual(
-    "",
-    values = c(
-      "mediumpurple4",
-      "steelblue4"
-    )
-    ) +
-  scale_fill_manual(
-    "",
-    values = c(
-      "mediumpurple4",
-      "steelblue4"
-    )
-    ) +
-      labs(x = "Rank", y = "Reward (R)", title="Overall performance") +
-  facet_grid(.~agent)
-```
-
-## Overplot
 ```{r, fig.width=2.5, fig.height=1.2}
 result1 %>%
   # filter(index < 25) %>%
@@ -133,8 +94,83 @@ result1 %>%
       "steelblue4"
     )
     ) +
-      labs(x = "Rank", y = "Reward (R)", title="Overall performance") 
+      labs(x = "Rank", y = "Reward (R)")
 
+```
+## par boredomw ribbon
+```{r, fig.width=2.5, fig.height=1.2}
+result1 %>%
+  # filter(index < 25) %>%
+  ggplot(aes(x = par_boredom, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  # lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Parent bordom", y = "Reward (R)") 
+```
+
+## kid_scale ribbon
+```{r, fig.width=2.5, fig.height=1.2}
+result1 %>%
+  # filter(index < 25) %>%
+  ggplot(aes(x = kid_scale, y = total_R, color = agent)) +
+  geom_point(size = 0.6, alpha = 0.6) +
+  geom_ribbon(
+    aes(
+      ymin = total_R - mad_total_R,
+      ymax = total_R + mad_total_R,
+      fill = agent,
+      group = agent
+    ),
+    alpha = 0.1,
+    color = NA
+  ) +
+  geom_line(size = 1, alpha = 1) +
+  theme_classic2() +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  # lims(y=c(0, 100)) +
+  scale_color_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+  scale_fill_manual(
+    "",
+    values = c(
+      "mediumpurple4",
+      "steelblue4"
+    )
+    ) +
+      labs(x = "Kid scale", y = "Reward (R)")
 ```
 
 ## Density
