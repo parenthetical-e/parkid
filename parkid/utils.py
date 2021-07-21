@@ -18,3 +18,14 @@ def R_homeostasis(reward, total_reward, set_point, cost=0.0):
     h = (deviance + reward - cost) / set_point
 
     return np.clip(h, a_min=-+0.0, a_max=np.inf)
+
+
+def rectified_linear(x, threshold):
+    """Returns x, if x > threshold"""
+
+    # Stop early?
+    if np.isclose(threshold, 0.0):
+        return x
+
+    # Relu go!
+    return np.where(x > threshold, x, 0)
