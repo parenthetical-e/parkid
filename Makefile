@@ -778,7 +778,7 @@ tune27:
 # Past experiments with test1/test2 suggest this should show the trade-off
 # I described above.
 
-# RESULTS: For exp20-31. The trade-off between total and change reward is
+# RESULTS: **For exp20-31.** The trade-off between total and change reward is
 #          pretty apparent as I go between the monster tasks. It takes
 #          less of a change difference to lead to net a win than I feared
 #          at the start of these experiments. Still, I should be able to 
