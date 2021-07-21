@@ -11,14 +11,14 @@ test1:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp1.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parkid --num_episodes=120  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=2 --set_point=20 --lr_R=0.6 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..50} 
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..100} 
 
 test2: 
 	-rm -rf $(DATA_PATH)/test2/*
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/exp2.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parpar --num_episodes=120  --change=40 --env_name1=BanditStaticMonster4 --env_name2=BanditDynamicMonster4 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..50} 
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..100} 
 	
 
 # --------------------------------------------------------------------------
@@ -761,7 +761,105 @@ tune27:
 		--lr_R=0.6 \
 		--par_boredom='(loguniform, 0.0001, 0.99)' 
 
-# TODO
-# rereun top-1 fop 121 and cross check
-# make value extraction notebook.
+# -------------------------------------------------------------------------
+# Experiments with more faithful replica's of Sumner's design suggest
+# then the benfits of change detection are not large, as in her desgin,
+# the, what I will call, "chattering" of kids curiosity distracts from
+# exploitation in parents. This lead to a net loss in total reward,
+# even when change detection happens. 
+#
+# In the experiments below I will explore a set of monster tasks, with
+# fixed parameters for ParKid and ParPar. There parameters came from 
+# hand tuning and seem to be good enough. Though, later I'll revisst them?
+#
+# Onto the tasks.
+#
+# First lets run a fathful replica of Emily's task, with matched trial numbers.
+# Past experiments with test1/test2 suggest this should show the trade-off
+# I described above.
 
+# RESULTS: For exp20-31. The trade-off between total and change reward is
+#          pretty apparent as I go between the monster tasks. It takes
+#          less of a change difference to lead to net a win than I feared
+#          at the start of these experiments. Still, I should be able to 
+#          show a win in Emily's org task, or at least my version of it.
+#   
+# 	       Further, adults should be able to gaurd againts the chatter
+#          of kids curiosity in general so it does not hamper their day
+#          to day exploitation. A nonlinear function/gate would do this?
+#
+#          Try out a relu with a tunable parent_threshold? More parameters,
+#          argh!? Can't see a way round, unfortunatly.
+
+exp20: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp20/run{1} --master_seed={1}' ::: {0..100} 
+
+exp21: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp21/run{1} --master_seed={1}' ::: {0..100} 
+	
+# Now lets run a (new) series of tasks, which are variations of Sumners. I
+# call the the BugMonsrt tasks becuase we exploring the smallest to biggest
+# changes we can given the basic task.
+#
+# The base ('static') Env is BanditBigMonster1. I then try variations for env_2.
+
+# env_name2=BanditBigMonster6
+exp22: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp22/run{1} --master_seed={1}' ::: {0..100} 
+
+exp23: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp23/run{1} --master_seed={1}' ::: {0..100} 
+	
+# env_name2=BanditBigMonster7
+exp24: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp24/run{1} --master_seed={1}' ::: {0..100} 
+
+exp25: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp25/run{1} --master_seed={1}' ::: {0..100} 
+	
+# env_name2=BanditBigMonster8
+exp26: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp26/run{1} --master_seed={1}' ::: {0..100} 
+
+exp27: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp2.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp27/run{1} --master_seed={1}' ::: {0..100} 
+
+# env_name2=BanditBigMonster9
+exp28: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp28/run{1} --master_seed={1}' ::: {0..100} 
+
+exp29: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp29/run{1} --master_seed={1}' ::: {0..100} 
+
+# env_name2=BanditBigMonster10
+exp30: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp30/run{1} --master_seed={1}' ::: {0..100} 
+
+exp31: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp31/run{1} --master_seed={1}' ::: {0..100} 
+	
