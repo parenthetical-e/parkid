@@ -15,6 +15,8 @@ from infomercial.utils import load_checkpoint
 from infomercial.utils import save_checkpoint
 
 from parkid.utils import R_homeostasis
+from parkid.utils import rectified_linear as phi
+
 from parkid.models import Critic
 from parkid.models import DeterministicActor
 from parkid.models import WSLS
@@ -31,6 +33,7 @@ def parkid(num_episodes=1000,
            kid_boredom=0.0,
            share=0.0,
            kid_scale=1,
+           parent_threshold=0.0,
            set_point=None,
            lr_R=.1,
            share_update=False,
@@ -126,8 +129,11 @@ def parkid(num_episodes=1000,
         env.reset()
 
         # ---
+        # Get shared E from the last round
+        share_E = par_E + phi(kid_scale * kid_E, parent_threshold)
+
         # PAR move (always first)
-        actor, critic, par_policy = par_wsls(par_E + kid_scale * kid_E, par_R)
+        actor, critic, par_policy = par_wsls(share_E, par_R)
         par_action = actor(list(critic.model.values()))
         par_state, par_R, _, _ = env.step(par_action)
 
