@@ -942,3 +942,76 @@ exp39:
 	parallel -j 4 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.05 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp39/run{1} --master_seed={1}' ::: {0..100} 
+
+
+# ---------------------------------------------------------------------------
+# 7/22/21
+# 481783b
+#
+# Try a progression on the big monster series with gating on. --parent_threshold=0.01 looked best (small amount) in the exp32-39 series.
+#
+# So, try that.
+#
+# RESULTS: **exp40-49** Gating w/ 0.01 did not have an effect until exp48
+#          (BanditBigMonster10) where is had a very clear positive benefit.
+#
+#          Try this series again but bump kid_scale, so we are gating
+#          and subjectivly amplifiying.
+
+
+# env_name2=BanditBigMonster6
+exp40: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp40/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp41: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp41/run{1} --master_seed={1} --output=False' ::: {0..100} 
+	
+# env_name2=BanditBigMonster7
+exp42: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp42/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp43: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp43/run{1} --master_seed={1} --output=False' ::: {0..100} 
+	
+# env_name2=BanditBigMonster8
+exp44: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp44/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp45: 
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/exp2.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp45/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# env_name2=BanditBigMonster9
+exp46: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp46/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp47: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp47/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# env_name2=BanditBigMonster10
+exp48: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp48/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp49: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp49/run{1} --master_seed={1} --output=False' ::: {0..100} 
+	
