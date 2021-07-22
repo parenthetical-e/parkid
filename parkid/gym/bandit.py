@@ -241,7 +241,7 @@ class BanditBigMonster6(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 0
+        best = 3
         self.best = [best]
 
         # Generate static/intial p_dist
@@ -269,7 +269,7 @@ class BanditBigMonster7(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 0
+        best = 3
         self.best = [best]
 
         # Generate static/intial p_dist
@@ -297,7 +297,7 @@ class BanditBigMonster8(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 0
+        best = 3
         self.best = [best]
 
         # Generate static/intial p_dist
@@ -325,7 +325,7 @@ class BanditBigMonster9(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 0
+        best = 3
         self.best = [best]
 
         # Generate static/intial p_dist
@@ -353,7 +353,7 @@ class BanditBigMonster10(BanditEnv):
     """
     def __init__(self):
         self.num_arms = 4
-        best = 0
+        best = 3
         self.best = [best]
 
         # Generate static/intial p_dist
