@@ -129,8 +129,13 @@ def parkid(num_episodes=1000,
         env.reset()
 
         # ---
-        # Get shared E from the last round
-        share_E = phi(kid_scale * kid_E, parent_threshold)
+        # Get shared E from the last round:
+        # Gate and rescale?
+        #
+        # I am not sure gating then scaling, rather than scaling
+        # then gating makes the most physical sense, but it is
+        # very convient to do. Proceed for now. Revisit this later.
+        share_E = kid_scale * phi(kid_E, parent_threshold)
 
         # PAR move (always first)
         actor, critic, par_policy = par_wsls(par_E + share_E, par_R)
