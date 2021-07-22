@@ -1,0 +1,289 @@
+---
+title: "Exp analysis - exp33 (and 35) - BanditDynamicRegMonster, testing parent_threshold"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(ggplot2)
+library(tidyr)
+library(ggpubr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/exp33/"
+dir.create(img_path)
+```
+
+# Fig. Exploration 
+## Load data (task 1)
+```{r, message=FALSE, warning=FALSE}
+# -------------------------------------------------------------
+# User def
+task_name <- "change_bandits"
+num_episodes <- 80
+change <- 40
+run_codes <- 1:100
+num_arms <- 4
+
+exp_names <- c("exp33", "exp35")
+agent_names <- c("ParKid", "ParPar")
+file_names <-
+  c(
+    "par_action",
+    "par_policy",
+    "alt_action",
+    "alt_policy",
+    "kid_action",
+    "kid_policy",
+    "par_score_E",
+    "par_score_R",
+    "kid_score_E",
+    "kid_score_R",
+    "kid_score_H",
+    "par_value_E",
+    "par_value_R",
+    "kid_value_E",
+    "kid_value_R",
+    "total_R",
+    "change_R",
+    "total_E",
+    "total_G",
+    'best',
+    'p_opt'
+  )
+
+# Init
+E_bias <- log(num_arms) * num_arms
+
+# !
+results <- NULL
+for (i in 1:length(exp_names)) {
+  # Load
+  exp_name <- exp_names[i]
+  agent_name <- agent_names[i]
+  tmp <- load_result1(exp_name,  run_codes, file_names,
+                     n_max = num_episodes + 1)
+  # Add metadata
+  tmp$exp <- exp_name
+  tmp$agent <- agent_name
+  tmp$task <- task_name
+  tmp$num_episodes <- num_episodes
+  # Join
+  results <- bind_rows(results, tmp)
+}
+
+# clean
+rm(tmp,
+   agent_names,
+   agent_name,
+   E_bias,
+   exp_name,
+   exp_names,
+   file_names,
+   i)
+```
+
+# Behave
+```{r, fig.width=2.5, fig.height=4}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=kid_action+1)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Action", title="Kid") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Action", title="Parent") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+# Value timecourses
+## Reward 
+```{r, fig.width=2.5, fig.height=4}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=kid_score_H)) +
+  geom_line(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="H. reward.", title="Kid") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=par_score_R)) +
+  geom_line(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward", title="Parent") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+## Reward value est
+```{r, fig.width=2.5, fig.height=4}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=kid_value_R)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward value est.", title="Kid") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 20) %>% 
+  ggplot(aes(x=global_step, y=par_value_R)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward value est.", title="Parent") +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+## Info value 
+```{r, fig.width=2.5, fig.height=1.6}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=kid_score_E)) +
+  geom_line(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value", title="Kid") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=par_score_E)) +
+  geom_line(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value", title="Parent") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+## Info value est
+```{r, fig.width=2.5, fig.height=1.6}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=kid_value_E)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value est.", title="Kid") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=par_value_E)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Info value est.", title="Parent") +
+  scale_y_continuous(trans='log10') +
+  theme_pubr(base_size = 8, legend = "none") +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+
+# Total rewards
+## Scatter w/ mean
+```{r, fig.width=1.7, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_jitter(width=0.2, size=0.4, alpha=1) +
+  stat_summary(fun.y=mean, geom="point", shape=95, size=8, color="red") +
+  theme_classic2() +
+  labs(x="", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_jitter(width=0.2, size=0.4, alpha=1) +
+  stat_summary(fun.y=mean, geom="point", shape=95, size=8, color="red") +
+  theme_classic2() +
+  labs(x="", y="After change", tag="") -> p2
+
+p1 + p2
+```
+
+## Boxplot
+```{r, fig.width=1.7, fig.height=1.2}
+results %>% 
+  group_by(agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=agent, y=total_R)) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  theme_classic2() +
+  labs(x="", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=agent, y=change_R)) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  theme_classic2() +
+  labs(x="", y="After change", tag="") -> p2
+
+p1 + p2
+```
