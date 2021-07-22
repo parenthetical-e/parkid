@@ -148,7 +148,7 @@ class BanditStaticRegMonster(BanditEnv):
     """The 'static'** 4 armed bandit, based on Sumner [1]
 
     ** The static refers to Emily's naming scheme. It doesn't make as much sense
-       here but we are burdened by history are we not?
+       here but we are all burdened by history are we not?
     
     [1] Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
     explore allows them to find information that adults miss. PsyArxiv h437v,
@@ -177,7 +177,7 @@ class BanditDynamicRegMonster(BanditEnv):
     """The 'dynamic'** 4 armed bandit, based on Sumner [1]
     
     ** The dynamic refers to Emily's naming scheme. It doesn't make as much
-       sense here but we are burdened by history are we not?
+       sense here but we are all burdened by history are we not?
 
     [1] Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
     explore allows them to find information that adults miss. PsyArxiv h437v,
