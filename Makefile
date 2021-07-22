@@ -1184,3 +1184,31 @@ exp71:
 	parallel -j 4 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp71/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+
+# ---------------------------------------------------------------------------
+# 7/22/21
+# 02aec5d
+#
+# Run an oracle exp on BanditDynamicRegMonster. What does best
+# perfomance look like in terms of V and total_R?
+
+exp72: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --lr_R=0.6 --log_dir=$(DATA_PATH)/exp72/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# Run an oracle exp on BanditBigMonster9. What does best
+# perfomance look like in terms of V and total_R?
+exp73: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp73/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# Run an oracle exp on BanditBigMonster10. What does best
+# perfomance look like in terms of V and total_R?
+exp74: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp74/run{1} --master_seed={1} --output=False' ::: {0..100} 
+			
