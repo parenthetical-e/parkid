@@ -1162,3 +1162,25 @@ exp69:
 			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp69/run{1} --master_seed={1} --output=False' ::: {0..100} 
 	
 
+
+# ---------------------------------------------------------------------------
+# 7/22/21
+# 44465f3
+#
+# Try the reg. bandits with --parent_threshold=0.01 and a
+# --kid_scale=4. 
+#
+# RESULTS: No benefit nor harm to --kid_scale=4 on the BanditDynamicRegMonster
+#          
+#          Run an oracle agent to get a sense of what is possible for 
+#          improvement?
+
+exp70: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=4 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp70/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+exp71: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp71/run{1} --master_seed={1} --output=False' ::: {0..100} 
