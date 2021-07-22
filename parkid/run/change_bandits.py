@@ -22,6 +22,7 @@ from parkid.models import DeterministicActor
 from parkid.models import WSLS
 from parkid.models import WSLSh
 from parkid.gym import bandit
+from parkid.models import R_update
 
 
 def oracle(num_episodes=1000,
@@ -55,6 +56,14 @@ def oracle(num_episodes=1000,
     num_actions = env1.action_space.n
     all_actions = list(range(num_actions))
 
+    # Init agent - just a critic
+    # This one is never used, added
+    # to generate the ideal RL value
+    # learning curves for some env.seed()
+    # aand for some lr_R
+    R_0 = 0
+    critic_R = Critic(num_actions, default_value=R_0)
+
     # ------------------------------------------------------------------------
     # !
     total_R = 0.0
@@ -76,12 +85,17 @@ def oracle(num_episodes=1000,
         par_action = env.best[0]
         _, par_R, _, _ = env.step(par_action)
 
+        # Learning, critic
+        critic_R = R_update(par_action, par_R, critic_R, lr_R)
+
         # ---
         # Log
         log.add_scalar("best", env.best[0], n)
         log.add_scalar("p_opt", env.p_dist[env.best[0]], n)
         log.add_scalar("par_action", par_action, n)
         log.add_scalar("par_score_R", par_R, n)
+        log.add_scalar("par_value_R", critic_R(par_action), n)
+
         total_R += par_R
         if n >= change:
             change_R += par_R
@@ -96,6 +110,7 @@ def oracle(num_episodes=1000,
                   best2=env2.best,
                   num_episodes=num_episodes,
                   change=change,
+                  par_critic_R=critic_R.state_dict(),
                   total_R=total_R,
                   change_R=change_R,
                   lr_R=lr_R,
