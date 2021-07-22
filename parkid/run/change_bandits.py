@@ -39,7 +39,8 @@ def parkid(num_episodes=1000,
            share_update=False,
            master_seed=42,
            log_dir=None,
-           write_to_disk=True):
+           write_to_disk=True,
+           output=True):
     """Parents and kids play a game of changing bandits"""
 
     # ------------------------------------------------------------------------
@@ -241,7 +242,10 @@ def parkid(num_episodes=1000,
         save_checkpoint(result,
                         filename=os.path.join(log.log_dir, "result.pkl"))
 
-    return {"total_R": total_R, "change_R": change_R}
+    if output:
+        return {"total_R": total_R, "change_R": change_R}
+    else:
+        return None
 
 
 def parpar(
@@ -256,7 +260,8 @@ def parpar(
         lr_R=.1,
         master_seed=42,
         log_dir=None,
-        write_to_disk=True):
+        write_to_disk=True,
+        output=True):
     """Parents and kids play a game of changing bandits"""
 
     # ------------------------------------------------------------------------
@@ -443,7 +448,10 @@ def parpar(
         save_checkpoint(result,
                         filename=os.path.join(log.log_dir, "result.pkl"))
 
-    return {"total_R": total_R, "change_R": change_R}
+    if output:
+        return {"total_R": total_R, "change_R": change_R}
+    else:
+        return None
 
 
 if __name__ == "__main__":
