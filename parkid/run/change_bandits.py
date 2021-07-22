@@ -238,6 +238,7 @@ def parkid(num_episodes=1000,
                   total_G=total_G,
                   lr_R=lr_R,
                   master_seed=master_seed)
+
     if write_to_disk:
         save_checkpoint(result,
                         filename=os.path.join(log.log_dir, "result.pkl"))
@@ -444,6 +445,7 @@ def parpar(
                   total_G=total_G,
                   lr_R=lr_R,
                   master_seed=master_seed)
+
     if write_to_disk:
         save_checkpoint(result,
                         filename=os.path.join(log.log_dir, "result.pkl"))
