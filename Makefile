@@ -881,12 +881,12 @@ exp31:
 #          Bump up a little more? 
 #
 #          **exp33-39** values past 0.01 don't have much more of an effect. 
-#          but having 0.01 does _seem_ to mitigate the loss in total value
-#          which implies the loss in the early phases. Changes in behaavoir
+#          Having >0.01 does _seem_ to mitigate the loss in total value,
+#          which means the loss in the early phases. Changes in behavoir
 #          plots seem consistent with this, though I am not sure how to
 #          quant this behave change. I am just eyeballing, unfortunatly.
 #          Overall this a lot of 'seem to' in this results. This is too 
-#          insensitive a test? And if so why is that exactly? 
+#          insensitive a test? Why is that? 
 #
 #          ....
 #
