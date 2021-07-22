@@ -130,10 +130,10 @@ def parkid(num_episodes=1000,
 
         # ---
         # Get shared E from the last round
-        share_E = par_E + phi(kid_scale * kid_E, parent_threshold)
+        share_E = phi(kid_scale * kid_E, parent_threshold)
 
         # PAR move (always first)
-        actor, critic, par_policy = par_wsls(share_E, par_R)
+        actor, critic, par_policy = par_wsls(par_E + share_E, par_R)
         par_action = actor(list(critic.model.values()))
         par_state, par_R, _, _ = env.step(par_action)
 
@@ -177,6 +177,7 @@ def parkid(num_episodes=1000,
         log.add_scalar("par_action", par_action, n)
         log.add_scalar("par_regret", par_G, n)
         log.add_scalar("par_score_E", par_E, n)
+        log.add_scalar("par_share_E", share_E, n)
         log.add_scalar("par_score_R", par_R, n)
         log.add_scalar("par_value_E", par_wsls.critic_E(par_action), n)
         log.add_scalar("par_value_R", par_wsls.critic_R(par_action), n)

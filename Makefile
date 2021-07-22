@@ -762,6 +762,9 @@ tune27:
 		--par_boredom='(loguniform, 0.0001, 0.99)' 
 
 # -------------------------------------------------------------------------
+# 7/21/2021
+# aa36bf0 
+#
 # Experiments with more faithful replica's of Sumner's design suggest
 # then the benfits of change detection are not large, as in her desgin,
 # the, what I will call, "chattering" of kids curiosity distracts from
@@ -863,3 +866,79 @@ exp31:
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp31/run{1} --master_seed={1}' ::: {0..100} 
 	
+
+# ----------------------------------------------------------------------------
+# 7/21/2021
+# f806e31
+#
+# Try out a relu with a tunable parent_threshold? More parameters,
+# argh!? Can't see a way round, unfortunatly.
+#
+# Repeat of exp20-21 (Reg monsters) but trying differnt parent_thresolds.
+# 
+# RESULTS: **exp32-34** there was maybe a small change by 
+#          --parent_threshold=0.01, nothing visible before that. 
+#          Bump up a little more? 
+#
+#          **exp33-39** values past 0.01 don't have much more of an effect. 
+#          but having 0.01 does _seem_ to mitigate the loss in total value
+#          which implies the loss in the early phases. Changes in behaavoir
+#          plots seem consistent with this, though I am not sure how to
+#          quant this behave change. I am just eyeballing, unfortunatly.
+#          Overall this a lot of 'seem to' in this results. This is too 
+#          insensitive a test? And if so why is that exactly? 
+#
+#          ....
+#
+#          Looking again at the last boxplot in exp32-39.Rmd does show
+#          the trends I talked about in the last para. 
+# 
+# 	       Lets see is the a gate at 0.01 makes kids more helpful in the 
+#          the big bandit series? Kind of a let down here.
+exp32: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.001 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp32/run{1} --master_seed={1}' ::: {0..100} 
+
+exp33: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.005 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp33/run{1} --master_seed={1}' ::: {0..100} 
+
+exp34: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.01 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp34/run{1} --master_seed={1}' ::: {0..100} 
+
+# Only need one control, with parpar
+exp35: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp35/run{1} --master_seed={1}' ::: {0..100} 
+
+# ---
+# Try a few more with parent_threshold>0.01
+
+# parent_threshold=0.02
+exp36: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.02 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp36/run{1} --master_seed={1}' ::: {0..100} 
+
+# parent_threshold=0.03
+exp37: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.03 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp37/run{1} --master_seed={1}' ::: {0..100} 
+
+# parent_threshold=0.04
+exp38: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.04 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp38/run{1} --master_seed={1}' ::: {0..100} 
+
+# parent_threshold=0.05
+exp39: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --parent_threshold=0.05 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp39/run{1} --master_seed={1}' ::: {0..100} 
