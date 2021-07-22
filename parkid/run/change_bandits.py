@@ -24,6 +24,93 @@ from parkid.models import WSLSh
 from parkid.gym import bandit
 
 
+def oracle(num_episodes=1000,
+           change=100,
+           env_name1="BanditUniform4",
+           env_name2="BanditChange4",
+           lr_R=.1,
+           master_seed=42,
+           log_dir=None,
+           write_to_disk=True,
+           output=True):
+
+    # ------------------------------------------------------------------------
+    # Sanity
+    if change > num_episodes:
+        raise ValueError("change must be less the num_episodes")
+    # log
+    log = SummaryWriter(log_dir=log_dir, write_to_disk=write_to_disk)
+
+    # ------------------------------------------------------------------------
+    # Init envs
+    Env1 = getattr(bandit, env_name1)
+    Env2 = getattr(bandit, env_name2)
+    env1 = Env1()
+    env2 = Env2()
+    env1.seed(master_seed)
+    env2.seed(master_seed)
+    env1.reset()
+    env2.reset()
+
+    num_actions = env1.action_space.n
+    all_actions = list(range(num_actions))
+
+    # ------------------------------------------------------------------------
+    # !
+    total_R = 0.0
+    change_R = 0.0
+    for n in range(num_episodes):
+        # ---
+        # Set env
+        if n < change:
+            env = env1
+        else:
+            env = env2
+        env.reset()
+
+        # ---
+        # get best action, and use it
+        #
+        # (call this action, etc, par_*
+        # to make it easy to plot
+        par_action = env.best[0]
+        _, par_R, _, _ = env.step(par_action)
+
+        # ---
+        # Log
+        log.add_scalar("best", env.best[0], n)
+        log.add_scalar("p_opt", env.p_dist[env.best[0]], n)
+        log.add_scalar("par_action", par_action, n)
+        log.add_scalar("par_score_R", par_R, n)
+        total_R += par_R
+        if n >= change:
+            change_R += par_R
+
+        log.add_scalar("total_R", total_R, n)
+        log.add_scalar("change_R", change_R, n)
+    log.close()
+
+    # ------------------------------------------------------------------------
+    # Build the final result and save it
+    result = dict(best1=env1.best,
+                  best2=env2.best,
+                  num_episodes=num_episodes,
+                  change=change,
+                  total_R=total_R,
+                  change_R=change_R,
+                  lr_R=lr_R,
+                  master_seed=master_seed)
+
+    if write_to_disk:
+        save_checkpoint(result,
+                        filename=os.path.join(log.log_dir, "result.pkl"))
+
+    if output:
+        return {"total_R": total_R, "change_R": change_R}
+    else:
+        return None
+
+
 def parkid(num_episodes=1000,
            change=100,
            env_name1="BanditUniform4",
@@ -457,4 +544,4 @@ def parpar(
 
 
 if __name__ == "__main__":
-    fire.Fire({"parkid": parkid, "parpar": parpar})
+    fire.Fire({"oracle": oracle, "parkid": parkid, "parpar": parpar})
