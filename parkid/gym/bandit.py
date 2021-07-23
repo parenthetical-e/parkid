@@ -230,6 +230,118 @@ class BanditBigMonster1(BanditEnv):
         return [seed]
 
 
+class BanditBigMonster2(BanditEnv):
+    """A 4 armed bandit, a variation on Sumner [1], with arm probabilites:
+
+    >>> p_dist = [0.4, 0.2, 0.3, 0.2]
+
+    [1]: Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        self.num_arms = 4
+        best = 0
+        self.best = [best]
+
+        # Generate static/intial p_dist
+        p_dist = [0.4, 0.2, 0.3, 0.2]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
+class BanditBigMonster3(BanditEnv):
+    """A 4 armed bandit, a variation on Sumner [1], with arm probabilites:
+
+    >>> p_dist = [0.4, 0.2, 0.3, 0.3]
+
+    [1]: Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        self.num_arms = 4
+        best = 0
+        self.best = [best]
+
+        # Generate static/intial p_dist
+        p_dist = [0.4, 0.2, 0.3, 0.3]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
+class BanditBigMonster4(BanditEnv):
+    """A 4 armed bandit, a variation on Sumner [1], with arm probabilites:
+
+    >>> p_dist = [0.4, 0.2, 0.3, 0.4]
+
+    [1]: Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        self.num_arms = 4
+        best = 0
+        self.best = [best]
+
+        # Generate static/intial p_dist
+        p_dist = [0.4, 0.2, 0.3, 0.4]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
+class BanditBigMonster5(BanditEnv):
+    """A 4 armed bandit, a variation on Sumner [1], with arm probabilites:
+
+    >>> p_dist = [0.4, 0.2, 0.3, 0.5]
+
+    [1]: Sumner, E. S. et al. The Exploration Advantage: Children’s instinct to
+    explore allows them to find information that adults miss. PsyArxiv h437v,
+    11 (2019).
+    """
+    def __init__(self):
+        self.num_arms = 4
+        best = 0
+        self.best = [best]
+
+        # Generate static/intial p_dist
+        p_dist = [0.4, 0.2, 0.3, 0.5]
+
+        # reward (0, 1) values
+        r_dist = [1] * self.num_arms
+
+        # !
+        BanditEnv.__init__(self, p_dist=p_dist, r_dist=r_dist)
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+
 class BanditBigMonster6(BanditEnv):
     """A 4 armed bandit, a variation on Sumner [1], with arm probabilites:
 
