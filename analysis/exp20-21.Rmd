@@ -44,8 +44,8 @@ change <- 40
 run_codes <- 1:100
 num_arms <- 4
 
-exp_names <- c("exp20", "exp21")
-agent_names <- c("ParKid", "ParPar")
+exp_names <- c("exp20", "exp21", "exp72")
+agent_names <- c("ParKid", "ParPar", "Oracle")
 file_names <-
   c(
     "par_action",
@@ -253,6 +253,7 @@ tmp %>%
   geom_jitter(width=0.2, size=0.4, alpha=1) +
   stat_summary(fun.y=mean, geom="point", shape=95, size=8, color="red") +
   theme_classic2() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   labs(x="", y="Total reward", tag="") -> p1
 
 tmp %>% 
@@ -260,6 +261,7 @@ tmp %>%
   geom_jitter(width=0.2, size=0.4, alpha=1) +
   stat_summary(fun.y=mean, geom="point", shape=95, size=8, color="red") +
   theme_classic2() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   labs(x="", y="After change", tag="") -> p2
 
 p1 + p2
@@ -275,14 +277,16 @@ results %>%
 
 tmp %>% 
   ggplot(aes(x=agent, y=total_R)) +
-  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1, notch=TRUE) +
   theme_classic2() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   labs(x="", y="Total reward", tag="") -> p1
 
 tmp %>% 
   ggplot(aes(x=agent, y=change_R)) +
-  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1, notch=TRUE) +
   theme_classic2() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   labs(x="", y="After change", tag="") -> p2
 
 p1 + p2
