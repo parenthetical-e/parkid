@@ -1285,6 +1285,9 @@ exp80:
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --lr_R=0.6 --log_dir=$(DATA_PATH)/exp80/run{1} --master_seed={1} --output=False' ::: {0..100} 
 
+
+# ... I accidently skipped some numbers here... oooops....
+
 # ---
 # BanditBigMonster* series. Begining with not-better changes, moving to 
 # much better.
