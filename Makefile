@@ -1192,7 +1192,29 @@ exp71:
 #
 # Run an oracle exp on BanditDynamicRegMonster. What does best
 # perfomance look like in terms of V and total_R?
-
+#
+# RESULTS: **exp72** Good news. The reason parpar and and parkid have been
+#          hard to seperate is both are a oracle levels of performance
+#          in both total_R and change_R
+#
+#          **exp73-74** Parkid w/ threshold and scale is nearing oracle 
+#          performance on BanditBigMonster9 and BanditBigMonster10.
+#          This is the reason scaling --kid_scale=2 to --kid_scale=4
+#          had little effect.
+#          Linear ungate parkid still marginally better than parpar, which
+#          is good. (that is --parent_threshold=0.0 --kid_scale=1).
+#
+#          Compating --kid_scale=1 and --kid_scale=4 on BanditBigMonster9 
+#          and BanditBigMonster10 suggests scaling has little downside, and
+#          can in the case of BanditBigMonster10 bump change_R. Not sure
+#          what the general story for scale will be. Another param is 
+#          really worth it?
+#
+#          **exp75-77** all learning agents are clearly better than 
+#          random. This was expected. I should have confirmed earlier.
+#
+#          In sum, parkid confirmed useful. Parkid w/ gating and 
+#          all the more so.
 exp72: 
 	parallel -j 4 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
@@ -1212,3 +1234,27 @@ exp74:
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp74/run{1} --master_seed={1} --output=False' ::: {0..100} 
 			
+# ---
+# 34f121e
+#
+# Run an random exp on BanditDynamicRegMonster. What does best
+# perfomance look like in terms of V and total_R?
+
+exp75: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py random --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --lr_R=0.6 --log_dir=$(DATA_PATH)/exp75/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# Run an oracle exp on BanditBigMonster9. What does best
+# perfomance look like in terms of V and total_R?
+exp76: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py random --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp76/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+# Run an oracle exp on BanditBigMonster10. What does best
+# perfomance look like in terms of V and total_R?
+exp77: 
+	parallel -j 4 \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py random --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --log_dir=$(DATA_PATH)/exp77/run{1} --master_seed={1} --output=False' ::: {0..100} 
