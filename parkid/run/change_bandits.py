@@ -21,6 +21,9 @@ from parkid.models import Critic
 from parkid.models import DeterministicActor
 from parkid.models import WSLS
 from parkid.models import WSLSh
+from parkid.models import CountMemory
+from parkid.models import SoftmaxActor
+
 from parkid.gym import bandit
 from parkid.models import R_update
 
@@ -34,6 +37,7 @@ def random(num_episodes=1000,
            log_dir=None,
            write_to_disk=True,
            output=True):
+    """One random agent on changing bandits."""
 
     # ------------------------------------------------------------------------
     # Sanity
@@ -137,7 +141,7 @@ def oracle(num_episodes=1000,
            log_dir=None,
            write_to_disk=True,
            output=True):
-
+    """The perfect agent on changing bandits."""
     # ------------------------------------------------------------------------
     # Sanity
     if change > num_episodes:
@@ -246,7 +250,7 @@ def parkid(num_episodes=1000,
            log_dir=None,
            write_to_disk=True,
            output=True):
-    """Parents and kids play a game of changing bandits"""
+    """A parent and kid on changing bandits."""
 
     # ------------------------------------------------------------------------
     # Sanity
@@ -468,7 +472,7 @@ def parpar(
         log_dir=None,
         write_to_disk=True,
         output=True):
-    """Parents and kids play a game of changing bandits"""
+    """Two parents on changing bandits."""
 
     # ------------------------------------------------------------------------
     # Sanity
@@ -661,10 +665,158 @@ def parpar(
         return None
 
 
+def ucbucb(num_episodes=1000,
+           change=100,
+           env_name1="BanditUniform4",
+           env_name2="BanditChange4",
+           temp=1.0,
+           beta=1.0,
+           lr_R=.1,
+           master_seed=42,
+           log_dir=None,
+           write_to_disk=True,
+           output=True):
+    """Two UCB agents on changing bandits."""
+
+    # ------------------------------------------------------------------------
+    # Sanity
+    if change > num_episodes:
+        raise ValueError("change must be less the num_episodes")
+    # log
+    log = SummaryWriter(log_dir=log_dir, write_to_disk=write_to_disk)
+
+    # ------------------------------------------------------------------------
+    # Init envs
+    Env1 = getattr(bandit, env_name1)
+    Env2 = getattr(bandit, env_name2)
+    env1 = Env1()
+    env2 = Env2()
+    env1.seed(master_seed)
+    env2.seed(master_seed)
+    env1.reset()
+    env2.reset()
+
+    num_actions = env1.action_space.n
+    all_actions = list(range(num_actions))
+
+    # Init values
+    R_0 = 0
+    par_R = R_0
+    alt_R = R_0
+
+    # Agents and memories
+    par_critic = Critic(num_actions, default_value=par_R)
+    par_actor = SoftmaxActor(num_actions, temp=temp, seed_value=master_seed)
+    par_count = CountMemory()
+
+    alt_critic = Critic(num_actions, default_value=alt_R)
+    alt_actor = SoftmaxActor(num_actions, temp=temp, seed_value=master_seed)
+    alt_count = CountMemory()
+
+    # ------------------------------------------------------------------------
+    # !
+    total_R = 0.0
+    change_R = 0.0
+    total_G = 0.0
+    for n in range(num_episodes):
+        # ---
+        # Set env
+        if n < change:
+            env = env1
+        else:
+            env = env2
+        env.reset()
+
+        # ---
+        # PAR move (always first)
+        par_action = par_actor(list(par_critic.model.values()))
+
+        # Est. regret and save it
+        par_G = estimate_regret(all_actions, par_action, par_critic)
+
+        # Pull a lever.
+        par_state, par_R, _, _ = env.step(par_action)
+
+        # ---
+        # ALT move
+        alt_action = alt_actor(list(alt_critic.model.values()))
+
+        # Est. regret and save it
+        alt_G = estimate_regret(all_actions, alt_action, alt_critic)
+
+        # Pull a lever.
+        alt_state, alt_R, _, _ = env.step(alt_action)
+
+        # ---
+        # Count bonus:
+        # PAR
+        par_bonus = ((2 * np.log(n + 1)) / par_count(par_action))**(0.5)
+
+        # ALT
+        alt_bonus = ((2 * np.log(n + 1)) / alt_count(alt_action))**(0.5)
+
+        # Learning, both policies.
+        par_payout = par_R + (beta * par_bonus)
+        par_critic = R_update(par_action, par_payout, par_critic, lr_R)
+        alt_payout = alt_R + (beta * alt_bonus)
+        alt_critic = R_update(alt_action, alt_payout, alt_critic, lr_R)
+
+        # ---
+        # Log
+        log.add_scalar("best", env.best[0], n)
+        log.add_scalar("par_state", par_state, n)
+        log.add_scalar("par_action", par_action, n)
+        log.add_scalar("par_regret", par_G, n)
+        log.add_scalar("par_score_R", par_R, n)
+        log.add_scalar("par_value_R", par_critic(par_action), n)
+        log.add_scalar("alt_state", alt_state, n)
+        log.add_scalar("alt_action", alt_action, n)
+        log.add_scalar("alt_regret", alt_G, n)
+        log.add_scalar("alt_score_R", alt_R, n)
+        log.add_scalar("alt_value_R", alt_critic(alt_action), n)
+        total_R += max(par_R, alt_R)
+        total_G += max(par_G, alt_G)
+        if n >= change:
+            change_R += max(par_R, alt_R)
+        log.add_scalar("total_G", total_G, n)
+        log.add_scalar("total_R", total_R, n)
+        log.add_scalar("change_R", change_R, n)
+
+    log.close()
+
+    # ------------------------------------------------------------------------
+    # Build the final result and save it
+    result = dict(best1=env1.best,
+                  best2=env2.best,
+                  num_episodes=num_episodes,
+                  change=change,
+                  beta=beta,
+                  temp=temp,
+                  lr_R=lr_R,
+                  par_critic=par_critic.state_dict(),
+                  par_memories=par_count.state_dict(),
+                  alt_critic=alt_critic.state_dict(),
+                  alt_memories=alt_count.state_dict(),
+                  total_R=total_R,
+                  change_R=change_R,
+                  total_G=total_G,
+                  master_seed=master_seed)
+
+    if write_to_disk:
+        save_checkpoint(result,
+                        filename=os.path.join(log.log_dir, "result.pkl"))
+
+    if output:
+        return {"total_R": total_R, "change_R": change_R}
+    else:
+        return None
+
+
 if __name__ == "__main__":
     fire.Fire({
         "oracle": oracle,
         "parkid": parkid,
         "parpar": parpar,
+        "ucbucb": ucbucb,
         "random": random
     })

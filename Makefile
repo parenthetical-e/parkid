@@ -9,17 +9,23 @@ DATA_PATH=/Users/qualia/Code/parkid/data
 test1: 
 	-rm -rf $(DATA_PATH)/test1/*
 	parallel -j 4 \
-			--joblog '$(DATA_PATH)/exp1.log' \
+			--joblog '$(DATA_PATH)/test1.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1}' ::: {0..100} 
+			'python parkid/run/change_bandits.py parkid --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --kid_boredom=0.0 --kid_scale=1 --set_point=40 --lr_R=0.6 --log_dir=$(DATA_PATH)/test1/run{1} --master_seed={1} --output=False' ::: {0..100} 
 
 test2: 
 	-rm -rf $(DATA_PATH)/test2/*
 	parallel -j 4 \
-			--joblog '$(DATA_PATH)/exp2.log' \
+			--joblog '$(DATA_PATH)/test2.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1}' ::: {0..100} 
+			'python parkid/run/change_bandits.py parpar --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --par_boredom=0.01 --lr_R=0.6 --log_dir=$(DATA_PATH)/test2/run{1} --master_seed={1} --output=False' ::: {0..100} 
 	
+test3: 
+	-rm -rf $(DATA_PATH)/test3/*
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/test3.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --temp=1.0 --beta=0.5 --lr_R=0.6 --log_dir=$(DATA_PATH)/test3/run{1} --master_seed={1} --output=False' ::: {0..100} 
 
 # --------------------------------------------------------------------------
 # 11-30-20

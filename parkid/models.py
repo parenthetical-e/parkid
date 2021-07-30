@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 
 def R_update(state, R, critic, lr):
-    """TD update"""
+    """Delta update"""
     update = lr * (R - critic(state))
     critic.update(state, update)
 
@@ -18,6 +18,32 @@ def E_update(state, E, critic, lr):
     critic.replace(state, update)
 
     return critic
+
+
+class CountMemory:
+    """A simple state counter."""
+    def __init__(self):
+        self.memory = dict()
+
+    def __call__(self, state):
+        return self.forward(state)
+
+    def forward(self, state):
+        # Init?
+        if state not in self.memory:
+            self.memory[state] = 0
+
+        # Update count in memory
+        # and then return it
+        self.memory[state] += 1
+
+        return self.memory[state]
+
+    def state_dict(self):
+        return self.memory
+
+    def load_state_dict(self, state_dict):
+        self.memory = state_dict
 
 
 class WSLS:
