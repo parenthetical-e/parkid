@@ -25,7 +25,14 @@ test3:
 	parallel -j 4 \
 			--joblog '$(DATA_PATH)/test3.log' \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --temp=1.0 --beta=0.5 --lr_R=0.6 --log_dir=$(DATA_PATH)/test3/run{1} --master_seed={1} --output=False' ::: {0..100} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --temp=20 --beta=0.5 --lr_R=0.6 --log_dir=$(DATA_PATH)/test3/run{1} --master_seed={1} --output=False' ::: {0..100} 
+
+test4: 
+	-rm -rf $(DATA_PATH)/test4/*
+	parallel -j 4 \
+			--joblog '$(DATA_PATH)/test4.log' \
+			--nice 19 --delay 0 --bar --colsep ',' --header : \
+			'python parkid/run/change_bandits.py oracle --num_episodes=80  --change=40 --env_name1=BanditStaticRegMonster --env_name2=BanditDynamicRegMonster --lr_R=0.6 --log_dir=$(DATA_PATH)/test4/run{1} --master_seed={1} --output=False' ::: {0..100} 
 
 # --------------------------------------------------------------------------
 # 11-30-20
