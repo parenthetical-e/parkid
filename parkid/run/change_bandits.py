@@ -67,7 +67,7 @@ def random(num_episodes=1000,
     # to generate the ideal RL value
     # learning curves for some env.seed()
     # aand for some lr_R
-    R_0 = 0
+    R_0 = 1.0
     critic_R = Critic(num_actions, default_value=R_0)
 
     # ------------------------------------------------------------------------
@@ -168,7 +168,7 @@ def oracle(num_episodes=1000,
     # to generate the ideal RL value
     # learning curves for some env.seed()
     # aand for some lr_R
-    R_0 = 0
+    R_0 = 1.0
     critic_R = Critic(num_actions, default_value=R_0)
 
     # ------------------------------------------------------------------------
@@ -274,7 +274,7 @@ def parkid(num_episodes=1000,
     all_actions = list(range(num_actions))
 
     # Init values
-    R_0 = 0
+    R_0 = 1.0
     E_0 = entropy(np.ones(num_actions) / num_actions)
     par_E = E_0
     par_R = R_0
@@ -496,7 +496,7 @@ def parpar(
     all_actions = list(range(num_actions))
 
     # Init values
-    R_0 = 0
+    R_0 = 1.0
     E_0 = entropy(np.ones(num_actions) / num_actions)
     par_E = E_0
     par_R = R_0
