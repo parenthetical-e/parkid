@@ -8,7 +8,7 @@ output: html_notebook
 library(zoo)
 library(ggplot2)
 library(tidyr)
-library(ggpubr)
+# library(ggpubr)
 library(patchwork)
 library(tidyr)
 library(dplyr)
@@ -33,19 +33,19 @@ img_path <- "~/Code/parkid/analysis/img/test/"
 dir.create(img_path)
 ```
 
-# Fig. Exploration 
-## Load data (task 1)
+
+# Load data
 ```{r, message=FALSE, warning=FALSE}
 # -------------------------------------------------------------
 # User def
 task_name <- "change_bandits"
 num_episodes <- 80
 change <- 40
-run_codes <- 1:5
+run_codes <- 1:100
 num_arms <- 4
 
-exp_names <- c("test1", "test2")
-agent_names <- c("ParKid", "ParPar")
+exp_names <- c("test1", "test2", "test3", "test4")
+agent_names <- c("ParKid", "ParPar", "UcbUcb", "Oracle")
 file_names <-
   c(
     "par_action",
@@ -56,6 +56,7 @@ file_names <-
     "kid_policy",
     "par_score_E",
     "par_score_R",
+    "par_bonus",
     "kid_score_E",
     "kid_score_R",
     "par_value_E",
@@ -70,9 +71,7 @@ file_names <-
     'p_opt'
   )
 
-# Init
-E_bias <- log(num_arms) * num_arms
-
+# -------------------------------------------------------------
 # !
 results <- NULL
 for (i in 1:length(exp_names)) {
@@ -81,57 +80,78 @@ for (i in 1:length(exp_names)) {
   agent_name <- agent_names[i]
   tmp <- load_result1(exp_name,  run_codes, file_names,
                      n_max = num_episodes + 1)
+  
   # Add metadata
   tmp$exp <- exp_name
   tmp$agent <- agent_name
   tmp$task <- task_name
   tmp$num_episodes <- num_episodes
+  
   # Join
   results <- bind_rows(results, tmp)
 }
-
-# clean
-rm(tmp,
-   agent_names,
-   agent_name,
-   E_bias,
-   exp_name,
-   exp_names,
-   file_names,
-   i)
 ```
 
-# Behave
-```{r, fig.width=2.5, fig.height=1.6}
+# Plot - Behave
+## Kid
+```{r, fig.width=3, fig.height=5}
 results %>% 
   filter(agent=="ParKid") %>% 
-  filter(run <= 5) %>% 
+  filter(run <= 10) %>% 
   ggplot(aes(x=global_step, y=kid_action+1)) +
-  geom_point(size=1, alpha=1, color="dodgerblue3") +
-  geom_line(aes(x=global_step, y=best+1), size=.1) +
-  facet_grid(run~agent) +
-  labs(x="Time", y="Action", title="Kid") +
-  theme_pubr(base_size = 8, legend = "none") +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(aes(x=global_step, y=best+1), size=0.6, alpha=0.5) +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", title="Kid (Parkid)") +
+  theme_classic() +
   theme(strip.background = element_blank(),
-        strip.text.y = element_blank()) -> kid1
+        strip.text.y = element_blank()) 
+```
 
+## Parents 
+```{r, fig.width=6, fig.height=5}
 results %>% 
-  filter(run <= 5) %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 10) %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="gray27") +
-  geom_line(aes(x=global_step, y=best+1), size=.1) +
-  facet_grid(run~agent) +
-  labs(x="Time", y="Action", title="Parent") +
-  theme_pubr(base_size = 8, legend = "none") +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(aes(x=global_step, y=best+1), size=0.6, alpha=0.5) +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", title="Parent (Parkid)") +
+  theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> par1
 
-kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
-```
+results %>% 
+  filter(agent=="ParPar") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="palegreen4") +
+  geom_line(aes(x=global_step, y=best+1), size=0.6, alpha=0.5) +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", title="Parent (ParPar)") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par2
 
-# Value timecourses
-## Reward
-```{r, fig.width=2.5, fig.height=1.6}
+results %>% 
+  filter(agent=="UcbUcb") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="mediumpurple3") +
+  geom_line(aes(x=global_step, y=best+1), size=0.6, alpha=0.5) +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", title="Parent (UCB)") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par3
+
+# ---
+par1 + par2 + par3
+```
+# Plot - Value timecourses
+## Reward (no ucb)
+```{r, fig.width=5, fig.height=3}
 results %>% 
   filter(agent=="ParKid") %>% 
   filter(run <= 5) %>% 
@@ -139,25 +159,27 @@ results %>%
   geom_point(size=1, alpha=1, color="dodgerblue3") +
   facet_grid(run~agent) +
   labs(x="Time", y="Reward value", title="Kid") +
-  theme_pubr(base_size = 8, legend = "none") +
+  theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> kid1
 
 results %>% 
+  filter(agent!="UcbUcb") %>% 
+  filter(agent!="Oracle") %>% 
   filter(run <= 5) %>% 
   ggplot(aes(x=global_step, y=par_value_R)) +
   geom_point(size=1, alpha=1, color="gray27") +
   facet_grid(run~agent) +
   labs(x="Time", y="Reward value", title="Parent") +
-  theme_pubr(base_size = 8, legend = "none") +
+  theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> par1
 
 kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
 ```
 
-## Info val
-```{r, fig.width=2.5, fig.height=1.6}
+## Info val (no ucb)
+```{r, fig.width=5, fig.height=3}
 results %>% 
   filter(agent=="ParKid") %>% 
   filter(run <= 5) %>% 
@@ -166,27 +188,44 @@ results %>%
   facet_grid(run~agent) +
   labs(x="Time", y="Info value", title="Kid") +
   scale_y_continuous(trans='log10') +
-  theme_pubr(base_size = 8, legend = "none") +
+  theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> kid1
 
 results %>% 
+  filter(agent!="UcbUcb") %>% 
   filter(run <= 5) %>% 
   ggplot(aes(x=global_step, y=par_value_E)) +
   geom_point(size=1, alpha=1, color="gray27") +
   facet_grid(run~agent) +
   labs(x="Time", y="Info value", title="Parent") +
   scale_y_continuous(trans='log10') +
-  theme_pubr(base_size = 8, legend = "none") +
+  theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> par1
 
 kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
 ```
+# Plot - bonus (ucb)
+```{r, fig.width=3, fig.height=7}
+results %>% 
+  filter(agent == "UcbUcb") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_bonus)) +
+  geom_point(size=1, alpha=1, color="mediumpurple3") +
+  geom_hline(yintercept=1, color="black", size=.1) +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Count bonus", title="Ucb") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> ucb1
+ucb1
+```
 
-# Total rewards
-## Scatter w/ mean
-```{r, fig.width=1.7, fig.height=1.2}
+
+# Plot - Total rewards
+## Scatter w/ median
+```{r, fig.width=4, fig.height=7}
 results %>% 
   group_by(agent, exp, run) %>% 
   summarise(total_R=last(total_R),
@@ -194,20 +233,24 @@ results %>%
   ungroup() -> tmp
 
 tmp %>% 
-  ggplot(aes(x=agent, y=total_R)) +
-  geom_jitter(width=0.2, size=0.4, alpha=1) +
-  stat_summary(fun.y=mean, geom="point", shape=95, size=5, color="darkgrey") +
-  theme_classic2() +
+  ggplot(aes(x=agent, y=total_R, color=agent)) +
+  geom_jitter(width=0.1, size=0.4, alpha=.3) +
+  stat_summary(fun=median, geom="point", shape=95, size=10) +
+  scale_colour_manual("", values = c(
+    "grey", "dodgerblue4", "palegreen4", "mediumpurple3")) +
+  theme_classic() +
   lims(y=c(0, 80)) +
   labs(x="", y="Total reward", tag="") -> p1
 
 tmp %>% 
-  ggplot(aes(x=agent, y=change_R)) +
-  geom_jitter(width=0.2, size=0.4, alpha=1) +
-  stat_summary(fun.y=mean, geom="point", shape=95, size=5, color="darkgrey") +
-  theme_classic2() +
+  ggplot(aes(x=agent, y=change_R, color=agent)) +
+  geom_jitter(width=0.1, size=0.4, alpha=.3) +
+  stat_summary(fun=median, geom="point", shape=95, size=10) +
+  scale_colour_manual("", values = c(
+    "grey", "dodgerblue4", "palegreen4", "mediumpurple3")) +
+  theme_classic() +
   lims(y=c(0, 80)) +
   labs(x="", y="After change", tag="") -> p2
 
-p1 + p2
+p1 / p2 + plot_layout(guides = "collect")
 ```
