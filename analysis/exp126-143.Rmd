@@ -1,0 +1,375 @@
+---
+title: "Exp analysis - exp126-143 - parpar, parkid, oracle on the entire BanditBigMonster series"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(stats)
+library(ggplot2)
+library(tidyr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+img_path <- "~/Code/parkid/analysis/img/exp126-143/"
+dir.create(img_path)
+```
+
+# Fig. Exploration 
+## Load data (task 1)
+```{r, message=FALSE, warning=FALSE}
+# -------------------------------------------------------------
+# User def
+num_episodes <- 80
+change <- 40
+run_codes <- 1:100
+num_arms <- 4
+
+exp_names <- c("exp126", "exp127", 
+               "exp128", "exp129", 
+               "exp130", "exp131", 
+               "exp132", "exp133", 
+               "exp134", "exp135", 
+               "exp136", "exp137", 
+               "exp138", "exp139",
+               "exp140", "exp141", 
+               "exp142", "exp143")
+
+agent_names <- c("ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar",
+                 "ParKid", "ParPar")
+
+task_names <- c("BanditBigMonster2", "BanditBigMonster2",
+                "BanditBigMonster3", "BanditBigMonster3",
+                "BanditBigMonster4", "BanditBigMonster4",
+                "BanditBigMonster5", "BanditBigMonster5",
+                "BanditBigMonster6", "BanditBigMonster6",
+                "BanditBigMonster7", "BanditBigMonster7",
+                "BanditBigMonster8", "BanditBigMonster8",
+                "BanditBigMonster9", "BanditBigMonster9",
+                "BanditBigMonster10", "BanditBigMonster10")
+
+del_probs <- c("-0.2", "-0.2",
+              "-0.1", "-0.1",
+              "0.0", "0.0",
+              "0.1", "0.1",
+              "0.2", "0.2",
+              "0.3", "0.3",
+              "0.4", "0.4",
+              "0.5", "0.5",
+              "0.6", "0.6")
+
+file_names <- c(
+    "par_action",
+    "alt_action",
+    "alt_policy",
+    "kid_action",
+    "kid_policy",
+    "par_score_E",
+    "par_score_R",
+    "kid_score_E",
+    "kid_score_R",
+    "kid_score_H",
+    "par_value_E",
+    "par_value_R",
+    "kid_value_E",
+    "kid_value_R",
+    "total_R",
+    "change_R",
+    "total_E",
+    "best"
+  )
+
+# Init
+E_bias <- log(num_arms) * num_arms
+
+# !
+results <- NULL
+for (i in 1:length(exp_names)) {
+  # Get metadata
+  exp_name <- exp_names[i]
+  agent_name <- agent_names[i]
+  task_name <- task_names[i]
+  del_prob <- del_probs[i]
+  
+  # !
+  tmp <- load_result1(exp_name,  run_codes, file_names,
+                     n_max = num_episodes + 1)
+  
+  # Add metadata
+  tmp$exp <- exp_name
+  tmp$agent <- agent_name
+  tmp$task <- task_name
+  tmp$del_prob <- del_prob
+  tmp$num_episodes <- num_episodes
+  
+  # Join
+  results <- bind_rows(results, tmp)
+}
+
+# clean
+rm(tmp,
+   agent_names,
+   agent_name,
+   E_bias,
+   exp_name,
+   exp_names,
+   file_names,
+   i)
+```
+
+# Behave
+```{r, fig.width=12, fig.height=14}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=kid_action+1)) +
+  geom_point(size=1, alpha=1, color="dodgerblue3") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
+  facet_grid(run~del_prob) +
+  labs(x="Time", y="Action", title="Kid") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> kid1
+
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
+  facet_grid(run~del_prob) +
+  labs(x="Time", y="Action", title="Parent") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+results %>% 
+  filter(agent=="ParPar") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  geom_line(aes(x=global_step, y=best+1), size=.1) +
+  facet_grid(run~del_prob) +
+  labs(x="Time", y="Action", title="Parent") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par2
+
+kid1 / par1 / par2
+```
+
+# Total rewards
+## Scatter w/ mean
+```{r, fig.width=4.5, fig.height=5}
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent)) +
+  geom_jitter(width=0.2, size=0.2, alpha=.6) +
+  stat_summary(fun=mean, geom="point", shape=95, size=10) +
+  scale_colour_manual("", values = c("dodgerblue4", "palegreen4")) +
+  theme_classic() +
+  labs(x="", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent)) +
+  geom_jitter(width=0.2, size=0.2, alpha=.6) +
+  stat_summary(fun=mean, geom="point", shape=95, size=10) +
+  scale_colour_manual("", values = c("dodgerblue4", "palegreen4")) +
+  theme_classic() +
+  labs(x="", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
+```
+
+## Boxplot
+```{r, fig.width=4.5, fig.height=5}
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent)) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  theme_classic() +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_color_grey("") +
+  lims(y=c(0, 80)) +
+  labs(x="Relative change", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent)) +
+  geom_boxplot(width=0.6, size=0.4, alpha=1) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(0, 45)) +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Relative change", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
+```
+
+
+## Median/mad
+### Points
+```{r, fig.width=4.5, fig.height=5}
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>%
+  group_by(del_prob, agent, exp) %>%
+  summarise(
+          total_sd=mad(total_R, na.rm = TRUE),
+          total_R=median(total_R),
+          change_sd=mad(change_R, na.rm = TRUE),  
+          change_R=mean(change_R)) %>% 
+          
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=total_R-total_sd, ymax=total_R+total_sd), width=.2) +
+  theme_classic() +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_color_grey("") +
+  lims(y=c(0, 80)) +
+  labs(x="Relative change", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent)) +
+  geom_point() +
+  geom_errorbar(aes(ymin=change_R-change_sd, ymax=change_R+change_sd), width=.2) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(0, 45)) +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Relative change", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
+```
+
+
+### Ribbon
+```{r, fig.width=4, fig.height=6}
+
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>%
+  group_by(del_prob, agent, exp) %>%
+  summarise(
+          total_sd=mad(total_R, na.rm = TRUE),
+          total_R=median(total_R),
+          change_sd=mad(change_R, na.rm = TRUE),  
+          change_R=median(change_R)) %>% 
+          
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent, group=agent)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=total_R-total_sd, ymax=total_R+total_sd), 
+              fill="grey", color=NA, alpha=0.2) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(20, 65)) +
+  labs(x="Relative change", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent, group=agent)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=change_R-change_sd, ymax=change_R+change_sd),
+              fill="grey", color=NA, alpha=0.2) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(10, 45)) +
+  labs(x="Relative change", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
+```
+
+## Mean/stderr
+### Ribbon
+```{r, fig.width=4, fig.height=4}
+
+stderr <- function(x, na.rm=FALSE) {
+  if (na.rm) x <- na.omit(x)
+  sqrt(var(x)/length(x))
+}
+
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>%
+  group_by(del_prob, agent, exp) %>%
+  summarise(
+          total_sd=stderr(total_R, na.rm = TRUE),
+          total_R=mean(total_R),
+          change_sd=stderr(change_R, na.rm = TRUE),  
+          change_R=mean(change_R)) %>% 
+          
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent, group=agent)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=total_R-total_sd, ymax=total_R+total_sd), 
+              fill="grey", color=NA, alpha=0.2) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(0, 65)) +
+  labs(x="Relative change", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent, group=agent)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=change_R-change_sd, ymax=change_R+change_sd),
+              fill="grey", color=NA, alpha=0.2) +
+  theme_classic() +
+  scale_color_grey("") +
+  lims(y=c(0, 45)) +
+  labs(x="Relative change", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
+```
