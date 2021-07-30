@@ -700,7 +700,7 @@ def ucbucb(num_episodes=1000,
     all_actions = list(range(num_actions))
 
     # Init values
-    R_0 = 0
+    R_0 = 1.0
     par_R = R_0
     alt_R = R_0
 
