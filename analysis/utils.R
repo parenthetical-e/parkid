@@ -19,7 +19,8 @@ load_result1 <-
           sep = "/"
         ),
         skip = skip,
-        n_max = n_max
+        n_max = n_max,
+        show_col_types = FALSE
       )
       for (name in file_names[2:num_files]) {
         file_name <- paste(
@@ -30,7 +31,7 @@ load_result1 <-
           sep = "/"
         )
         if (file.exists(file_name)) {
-          tmp <- read_csv(file_name, skip = skip, n_max = n_max)
+          tmp <- read_csv(file_name, skip = skip, n_max = n_max, show_col_types = FALSE)
           runtmp[[name]] <- tmp[[name]]
         } else {
           warning(paste(file_name, " does not exist (filling with 0).\n", sep = ""))
@@ -67,7 +68,8 @@ load_result2 <-
             sep = "/"
           ),
           skip = skip,
-          n_max = n_max
+          n_max = n_max,
+          show_col_types = FALSE
         )
         for (name in file_names[2:num_files]) {
           file_name <- paste(
@@ -79,7 +81,7 @@ load_result2 <-
             sep = "/"
           )
           if (file.exists(file_name)) {
-            tmp <- read_csv(file_name, skip = skip, n_max = n_max)
+            tmp <- read_csv(file_name, skip = skip, n_max = n_max, show_col_types = FALSE)
             runtmp[[name]] <- tmp[[name]]
           } else {
             warning(paste(file_name, " does not exist (filling with 0).\n", sep = ""))
