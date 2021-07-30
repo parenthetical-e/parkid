@@ -1,6 +1,6 @@
 SHELL=/bin/bash -O expand_aliases
-DATA_PATH=/Users/qualia/Code/parkid/data
-# DATA_PATH=/home/stitch/Code/parkid/data/
+# DATA_PATH=/Users/qualia/Code/parkid/data
+DATA_PATH=/home/stitch/Code/parkid/data/
 
 # --------------------------------------------------------------------------
 # Test recipes
