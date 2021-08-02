@@ -51,6 +51,15 @@ exp_names <- c("exp126", # parkid
                "exp138", 
                "exp140", 
                "exp142", 
+               "exp127", # parpar
+               "exp129", 
+               "exp131", 
+               "exp133", 
+               "exp135", 
+               "exp137", 
+               "exp139", 
+               "exp141", 
+               "exp143", 
                "exp144", # oracle
                "exp145",
                "exp146",
@@ -88,6 +97,15 @@ agent_names <- c("ParKid",
                  "ParKid",
                  "ParKid",
                  "ParKid",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
+                 "ParPar",
                  "Oracle",
                  "Oracle",
                  "Oracle",
@@ -152,9 +170,27 @@ task_names <- c("BanditBigMonster2",
                 "BanditBigMonster7", 
                 "BanditBigMonster8", 
                 "BanditBigMonster9", 
+                "BanditBigMonster10",
+                "BanditBigMonster2", 
+                "BanditBigMonster3", 
+                "BanditBigMonster4", 
+                "BanditBigMonster5", 
+                "BanditBigMonster6", 
+                "BanditBigMonster7", 
+                "BanditBigMonster8", 
+                "BanditBigMonster9", 
                 "BanditBigMonster10")
                 
 del_probs <- c("-0.2", 
+              "-0.1",
+              "0.0",
+              "0.1",
+              "0.2",
+              "0.3",
+              "0.4",
+              "0.5",
+              "0.6",
+              "-0.2", 
               "-0.1",
               "0.0",
               "0.1",
@@ -276,6 +312,19 @@ results %>%
         strip.text.y = element_blank()) -> par1
 
 results %>% 
+  filter(agent=="ParPar") %>% 
+  filter(run <= 10) %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(aes(x=global_step, y=best+1), size=0.6, alpha=0.5) +
+  facet_grid(run~del_prob) +
+  labs(x="Time", y="Action", title="Parent (Parpar)") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par2
+
+
+results %>% 
   filter(agent=="UcbUcb") %>% 
   filter(run <= 10) %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
@@ -285,9 +334,9 @@ results %>%
   labs(x="Time", y="Action", title="Parent (UCB)") +
   theme_classic() +
   theme(strip.background = element_blank(),
-        strip.text.y = element_blank()) -> par2
+        strip.text.y = element_blank()) -> par3
 
-par1 / par2
+par1 / par2 / par3
 ```
 
 # Plot - Total rewards
