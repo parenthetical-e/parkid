@@ -41,7 +41,7 @@ dir.create(img_path)
 task_name <- "change_bandits"
 num_episodes <- 80
 change <- 40
-run_codes <- 1:100
+run_codes <- 1:20
 num_arms <- 4
 
 exp_names <- c("test1", "test2", "test3", "test4")
@@ -176,6 +176,22 @@ results %>%
         strip.text.y = element_blank()) -> par1
 
 kid1 + par1 + plot_layout(ncol = 2, widths = c(1, 2))
+```
+## Reward (ucb)
+```{r, fig.width=2, fig.height=3}
+
+results %>% 
+  filter(agent=="UcbUcb") %>% 
+  filter(run <= 5) %>% 
+  ggplot(aes(x=global_step, y=par_value_R)) +
+  geom_point(size=1, alpha=1, color="gray27") +
+  facet_grid(run~agent) +
+  labs(x="Time", y="Reward value", title="Parent") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> par1
+
+par1
 ```
 
 ## Info val (no ucb)
