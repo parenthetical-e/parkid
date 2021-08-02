@@ -1975,6 +1975,12 @@ exp188:
 # - oracle
 # - random
 # - ucbucb
+#
+# RESULTS: with R_0 reset, results are back to expactations. And parkid out
+#          outperforms ucb, especially in the extreme ends of the 
+#          BanditBigMonster* series. Not enough to try and say much about
+#          in the paper. Never the less, a comfort.
+
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
