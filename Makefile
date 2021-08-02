@@ -1822,6 +1822,25 @@ exp170:
 # parpar are the same, whereas in 90-107 parkid scales much better.
 
 # Below is an exact copy of exp90-107, renumbered. Is it the same?
+#
+# RESULT: Very concerning. Parpar and parkid give equal performance
+#         now. The only difference should be an initial value choice.
+#         which should not be be able to have THAT large an impact?
+#         ...
+#         Rereadin ghte code, and thinking through how the tabular 
+#         critic gets initialized makes it clear this is NOT
+#         just an initial value, but makes the critic assume all choices
+#         are max value at the start. This can in turn profoundly effect
+#         all further exploration, and especially would favor change 
+#         detection. 
+#         ^ The above is interesting to note generally. But is outside 
+#         typical RL. 
+#         In other words, R_0 does need to be 1. (Even though this
+#         seems to handicap UCB.)
+#         
+#         For the sake of continoutiny, I am doing to reset R0 to 0
+#         and re-write all the recipes for v1 current bio. Sigh.
+#         
 
 # env_name2=BanditBigMonster2
 # exp90: 
