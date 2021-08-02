@@ -95,10 +95,8 @@ class WSLSh(WSLS):
         return actor, critic, policy
 
 
-# COPY from informercial; wanted to rename some params
-# and make some small changes w/out disrupting that
-# code base
 class Critic:
+    """A tabular critic"""
     def __init__(self, num_inputs, default_value):
         self.num_inputs = num_inputs
         self.default_value = default_value
