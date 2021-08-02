@@ -2221,53 +2221,53 @@ exp224:
 exp225: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster2 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp225/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster2 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp225/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster3
 exp226: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster3 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp226/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster3 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp226/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster4
 exp227: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster4 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp227/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster4 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp227/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster5
 exp228: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster5 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp228/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster5 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp228/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster6
 exp229: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp229/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster6 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp229/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster7
 exp230: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp230/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster7 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp230/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster8
 exp231: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp231/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster8 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp231/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster9
 exp232: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp232/run{1} --master_seed={1} --output=False' ::: {0..500} 
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster9 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp232/run{1} --master_seed={1} --output=False' ::: {0..500} 
 
 # --env_name2=BanditBigMonster10
 exp233: 
 	parallel -j 39 \
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
-			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --temp=0.001 --beta=0.1 --log_dir=$(DATA_PATH)/exp233/run{1} --master_seed={1} --output=False' ::: {0..500}
+			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp233/run{1} --master_seed={1} --output=False' ::: {0..500}
 
