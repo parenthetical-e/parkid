@@ -27,9 +27,8 @@ source("utils.R")
 data_path <- "/Volumes/Data/infomercial/data"
 ```
 
-# Task 1 
-## orignal
-```{r, fig.width=1.2, fig.height=0.5}
+# Task 1
+```{r, fig.width=4, fig.height=1.5}
 best <- 1
 best_choice = rep(0, 4)
 best_choice[best] <- 1
@@ -37,16 +36,16 @@ best_choice[best] <- 1
 classic <- data.frame(
   best=best_choice,
   choice=1:4,
-  payout=c(0.6, 0.2, 0.3, 0.1))
+  payout=c(6, 2, 3, 1))
 
 # Result
 classic %>% 
   ggplot(aes(x=1, y=payout, fill=factor(best))) + 
   geom_bar(width=0.5, alpha=1, stat="identity") +
   lims(x=c(0, 2)) +
-  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_y_continuous(limits=c(0,8.1), breaks = c(0, 8)) +
   scale_fill_manual(values=c("darkgrey", "black")) +
-  labs(x="Action", y="Reward", title="Initial (40 trials)") +
+  labs(x="Action", y="Reward\nvalue", subtitle="Beginning (40 trials)") +
   facet_wrap(choice~., nrow=1) +
   theme_classic() +
   theme(legend.position = "none") +
@@ -61,15 +60,11 @@ classic %>%
   theme(panel.grid.minor = element_blank()) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p1
 
-
-# ------------------------------------------------------------------------
-# save
-name <- "img/task1a"
-ggsave(paste(name, ".pdf", sep=""), plot=p1, width = 1.2*2, height = 0.6*2)
+p1
 ```
 
 ## change
-```{r, fig.width=3, fig.height=1.25}
+```{r, fig.width=4, fig.height=1.5}
 best <- 4
 best_choice = rep(0, 4)
 best_choice[best] <- 1
@@ -77,16 +72,16 @@ best_choice[best] <- 1
 classic <- data.frame(
   best=best_choice,
   choice=1:4,
-  payout=c(0.6, 0.2, 0.3, 0.8))
+  payout=c(6, 2, 3, 8))
 
 # Result
 classic %>% 
   ggplot(aes(x=1, y=payout, fill=factor(best))) + 
   geom_bar(width=0.5, alpha=1, stat="identity") +
   lims(x=c(0, 2)) +
-  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_y_continuous(limits=c(0,8.1), breaks = c(0, 8)) +
   scale_fill_manual(values=c("darkgrey", "black")) +
-  labs(x="Action", y="Reward", title="Changed (40 trials)") +
+  labs(x="Action", y="Reward\nvalue", subtitle="After change (40 trials)") +
   facet_wrap(choice~., nrow=1) +
   theme_classic() +
   # theme_pubr(base_size = 6, legend = "none") +
@@ -101,12 +96,87 @@ classic %>%
   theme(panel.grid.minor = element_blank()) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p2
 
-
-# ------------------------------------------------------------------------
-print(p2)
-name <- "img/task1b"
-ggsave(paste(name, ".pdf", sep=""), plot=p2, width = 1.2*2, height = 0.6*2)
+p2
 ```
-```{r, fig.width=3, fig.height=2.5}
-p1 / p2
+
+```{r, fig.width=4, fig.height=3}
+p1 / p2 + 
+  plot_annotation(title="Monsters task (deterministic)")
+```
+
+# Task 2 - Variable monsters
+```{r, fig.width=4, fig.height=1.5}
+best <- 1
+best_choice = rep(0, 4)
+best_choice[best] <- 1
+
+classic <- data.frame(
+  best=best_choice,
+  choice=1:4,
+  payout=c(0.4, 0.2, 0.3, 0.1))
+
+# Result
+classic %>% 
+  ggplot(aes(x=1, y=payout, fill=factor(best))) + 
+  geom_bar(width=0.5, alpha=1, stat="identity") +
+  lims(x=c(0, 2)) +
+  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_fill_manual(values=c("darkgrey", "black")) +
+  labs(x="Action", y="Reward\nvalue", subtitle="Beginning (40 trials)") +
+  facet_wrap(choice~., nrow=1) +
+  theme_classic() +
+  theme(legend.position = "none") +
+  # theme_pubr(base_size = 6, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text.x = element_blank()) +
+  # theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.x = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p1
+
+p1
+```
+
+## change
+```{r, fig.width=4, fig.height=1.5}
+best <- 4
+best_choice = rep(0, 4)
+best_choice[best] <- 1
+
+classic <- data.frame(
+  best=best_choice,
+  choice=1:4,
+  payout=c(0.4, 0.2, 0.3, 0.8))
+
+# Result
+classic %>% 
+  ggplot(aes(x=1, y=payout, fill=factor(best))) + 
+  geom_bar(width=0.5, alpha=1, stat="identity") +
+  lims(x=c(0, 2)) +
+  scale_y_continuous(limits=c(0,1.1), breaks = c(0, 1)) +
+  scale_fill_manual(values=c("darkgrey", "black")) +
+  labs(x="Action", y="Reward\nvalue", subtitle="After change (40 trials)") +
+  facet_wrap(choice~., nrow=1) +
+  theme_classic() +
+  # theme_pubr(base_size = 6, legend = "none") +
+  theme(strip.background = element_blank()) +
+  theme(axis.text.x = element_blank()) +
+  theme(legend.position = "none") +
+  # theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.x = element_blank()) +
+  theme(strip.text = element_blank()) +
+  theme(axis.line = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1)) -> p2
+
+p2
+```
+
+```{r, fig.width=4, fig.height=3}
+p1 / p2 + 
+  plot_annotation(title="Variable monsters task (probabilistic)")
 ```
