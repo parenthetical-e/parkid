@@ -672,6 +672,7 @@ def ucbucb(num_episodes=1000,
            temp=1.0,
            beta=1.0,
            lr_R=.1,
+           share_update=False, # dummy
            master_seed=42,
            log_dir=None,
            write_to_disk=True,
