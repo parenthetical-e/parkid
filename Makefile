@@ -2363,12 +2363,13 @@ tune31:
 		--num_processes=40 \
 		--metric='total_R' \
 		--stat='mean' \
-		--set_point=40 \
 		--lr_R=0.6 \
 		--kid_boredom=0.0 \
 		--par_boredom='(loguniform, 0.001, 0.1)' 
 
 # !!! UCB !!!
+
+# Beta only (temp=0.25)
 tune32: 
 	python parkid/run/tune_change.py $(DATA_PATH)/tune32 \
 		--model_name='ucbucb' \
@@ -2381,7 +2382,23 @@ tune32:
 		--num_processes=40 \
 		--metric='total_R' \
 		--stat='mean' \
-		--set_point=40 \
+		--lr_R=0.6 \
+		--temp=0.25 \
+		--beta='(loguniform, 0.05, 5.0)' 
+
+# Beta and temp
+tune33: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune33 \
+		--model_name='ucbucb' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
 		--lr_R=0.6 \
 		--temp='(loguniform, 0.025, 2.5)' \
 		--beta='(loguniform, 0.05, 5.0)' 
