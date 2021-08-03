@@ -736,7 +736,6 @@ tune24:
 # --------------------------------------------------------------------------
 # 7-19-2021
 # c7e3f47 
-# ***Used to generate data for current biology draft***
 # 
 # Tune sweep for BanditStaticMonster4 -- all sensible params
 
@@ -1975,6 +1974,12 @@ exp188:
 # - oracle
 # - random
 # - ucbucb
+#
+# RESULTS: with R_0 reset, results are back to expactations. And parkid out
+#          outperforms ucb, especially in the extreme ends of the 
+#          BanditBigMonster* series. Not enough to try and say much about
+#          in the paper. Never the less, a comfort.
+
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -2271,3 +2276,129 @@ exp233:
 			--nice 19 --delay 0 --bar --colsep ',' --header : \
 			'python parkid/run/change_bandits.py ucbucb --num_episodes=80  --change=40 --env_name1=BanditBigMonster1 --env_name2=BanditBigMonster10 --lr_R=0.6 --temp=0.25 --beta=0.5 --log_dir=$(DATA_PATH)/exp233/run{1} --master_seed={1} --output=False' ::: {0..500}
 
+
+# -------------------------------------------------------------------------
+# 8/2/2021
+# 64d5934
+#
+# Robustness of the three agents to parameter choice/model tuning check.
+# The task is BanditBigMonster1-> BanditBigMonster110, aka the easier change 
+# to notice.
+# - Fix learning rate (0.6)
+# - Explore exploration parameters only.
+
+# ---
+# !!! PARKID !!!
+
+# No gate / No scale
+tune28: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune28 \
+		--model_name='parkid' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--set_point=40 \
+		--lr_R=0.6 \
+		--kid_boredom=0.0 \
+		--parent_threshold=0.0 \
+		--kid_scale=1 \
+		--par_boredom='(loguniform, 0.001, 0.1)'
+
+# Gate w/ no scale
+tune29: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune29 \
+		--model_name='parkid' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--set_point=40 \
+		--lr_R=0.6 \
+		--kid_boredom=0.0 \
+		--kid_scale=1 \
+		--par_boredom='(loguniform, 0.001, 0.1)' \
+		--parent_threshold='(loguniform, 0.001, 0.1)' 
+		
+# Gate w/ scale
+tune30: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune30 \
+		--model_name='parkid' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--set_point=40 \
+		--lr_R=0.6 \
+		--kid_boredom=0.0 \
+		--par_boredom='(loguniform, 0.001, 0.1)' \
+		--parent_threshold='(loguniform, 0.001, 0.1)' \
+		--kid_scale='(uniform, 0.1, 10)'
+
+# !!! PARPAR !!!!
+tune31: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune31 \
+		--model_name='parpar' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--lr_R=0.6 \
+		--kid_boredom=0.0 \
+		--par_boredom='(loguniform, 0.001, 0.1)' 
+
+# !!! UCB !!!
+
+# Beta only (temp=0.25)
+tune32: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune32 \
+		--model_name='ucbucb' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--lr_R=0.6 \
+		--temp=0.25 \
+		--beta='(loguniform, 0.05, 5.0)' 
+
+# Beta and temp
+tune33: 
+	python parkid/run/tune_change.py $(DATA_PATH)/tune33 \
+		--model_name='ucbucb' \
+		--env_name1='BanditBigMonster1' \
+		--env_name2='BanditBigMonster10' \
+		--change=40 \
+		--num_episodes=80 \
+		--num_samples=1000 \
+		--num_repeats=100 \
+		--num_processes=40 \
+		--metric='total_R' \
+		--stat='mean' \
+		--lr_R=0.6 \
+		--temp='(loguniform, 0.025, 2.5)' \
+		--beta='(loguniform, 0.05, 5.0)' 
