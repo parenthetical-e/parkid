@@ -1,0 +1,225 @@
+---
+title: "Results - figures - Parkid - Curr Bio v1"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(stats)
+library(ggplot2)
+library(tidyr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+
+# Paths
+```{r, message=FALSE}
+data_path <- "~/Code/parkid/data/"
+analysis_path <- "~/Code/parkid/analysis/"
+img_path <- "~/Code/parkid/analysis/img/figures/"
+```
+
+
+
+# Load data
+- Load an pre-analyzed dataset. See exp189-exp233.Rmd for its creation.
+```{r, message=FALSE, warning=FALSE}
+load(paste(analysis_path, "exp189-exp233.RData", sep=""))
+load(paste(analysis_path, "tune28-33.RData", sep=""))
+```
+
+
+# Behave examples
+## Kid and parent
+```{r, fig.width=4, fig.height=3}
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 3) %>% 
+  filter(del_prob == "0.2") %>% 
+  ggplot(aes(x=global_step, y=kid_action+1)) +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(size=.1, alpha=1, color="dodgerblue4") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", subtitle="Kid") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p1
+
+results %>% 
+  filter(agent=="ParPar") %>% 
+  filter(run <= 3) %>% 
+  filter(del_prob == "0.2") %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(size=.1, alpha=1, color="dodgerblue4") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", subtitle="Parent") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p2
+
+p1 + p2 + 
+  plot_annotation(title="Example model behavoir")
+```
+## Ucb
+```{r, fig.width=2, fig.height=3}
+results %>% 
+  filter(agent=="UcbUcb") %>% 
+  filter(run <= 3) %>% 
+  filter(del_prob == "0.2") %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="palegreen4") +
+  geom_line(size=.1, alpha=1, color="palegreen4") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(run~del_prob) +
+  labs(x="Time", y="Action", title="Example UCB") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p1
+p1 
+```
+
+# Plot - Total rewards (final)
+## Points
+```{r, fig.width=5, fig.height=7}
+results %>% 
+  filter(agent != "Oracle") %>% 
+  filter(agent != "UcbUcb") %>%
+  group_by(del_prob, agent, exp, run) %>%
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp1
+
+tmp1 %>%
+  group_by(del_prob, agent, exp) %>%
+  summarise(
+          total_sd=sd(total_R, na.rm = TRUE),
+          total_R=mean(total_R),
+          change_sd=sd(change_R, na.rm = TRUE),  
+          change_R=mean(change_R)) %>% 
+  ungroup() -> tmp2
+
+tmp2 %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent)) +
+  geom_point(data=tmp1, mapping=aes(x=del_prob, y=total_R, group=agent),
+             position = position_dodge(width = .6),
+             alpha=0.4, color="grey", size=.5) +
+  geom_point(size=2, position = position_dodge(width = .6)) +
+  geom_errorbar(aes(ymin=total_R-total_sd, ymax=total_R+total_sd), 
+                width=.5, alpha=1, 
+                position = position_dodge(width = .6)) +
+  theme_classic() +
+  scale_colour_manual("Agent", values = c(
+    "dodgerblue4","palegreen4", "black")) +
+  scale_fill_manual("", values = c(
+    "dodgerblue4","palegreen4", "black")) +
+  labs(x="Relative change in reward value", y="Total reward", tag="") -> p1
+
+tmp2 %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent)) +
+  geom_point(data=tmp1, mapping=aes(x=del_prob, y=change_R, group=agent),
+             position = position_dodge(width = .6),
+             alpha=0.4, color="grey", size=.5) +
+  geom_point(size=2, position = position_dodge(width = .6)) +
+  geom_errorbar(aes(ymin=change_R-change_sd, ymax=change_R+change_sd), 
+                width=.4, alpha=1,
+                position = position_dodge(width = .6)) +
+  theme_classic() +
+  scale_colour_manual("Agent", values = c(
+    "dodgerblue4","palegreen4", "black")) +
+  scale_fill_manual("", values = c(
+    "dodgerblue4","palegreen4", "black")) +
+  labs(x="Relative change in reward value", y="Reward after change", tag="") -> p2
+
+p1 / p2 + 
+  plot_layout(guides = "collect") +
+  plot_annotation(title="Parent-Kid versus Parent-Parent",
+                  subtitle = "as a function of relative change in value")
+```
+
+
+# Plot - Vesus ucb 
+- BanditBigMonster10
+## Points
+```{r, fig.width=1.6, fig.height=3}
+results %>% 
+  filter(agent != "Oracle") %>% 
+  # filter(agent != "Random") %>% 
+  filter(task %in% c("BanditBigMonster10")) %>% 
+  group_by(task, del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp1
+
+tmp1 %>%
+  group_by(task, del_prob, agent, exp) %>%
+  summarise(
+          total_sd=sd(total_R, na.rm = TRUE),
+          total_R=mean(total_R),
+          change_sd=sd(change_R, na.rm = TRUE),  
+          change_R=mean(change_R)) %>% 
+  ungroup() -> tmp2
+
+tmp1$agent <- factor(tmp1$agent, levels=c("ParKid", "UcbUcb", "ParPar", "Random"))
+tmp2$agent <- factor(tmp2$agent, levels=c("ParKid", "UcbUcb", "ParPar", "Random"))
+
+tmp2 %>% 
+  ggplot(aes(x=agent, y=total_R, color=agent)) +
+  geom_point(data=tmp1, position = position_dodge(width = .3), 
+              alpha=0.4, color="grey", size=.5) +
+  geom_point(size=2, position = position_dodge(width = .3)) +
+  geom_errorbar(aes(ymin=total_R-total_sd, ymax=total_R+total_sd),
+                width=.1, alpha=1, position = position_dodge(width = .3)) +
+  
+  theme_classic() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  lims(y=c(10, 65)) +
+  scale_colour_manual("", values = c(
+    "dodgerblue4","mediumpurple3", "palegreen4", "black")) +
+  labs(x="Agent", y="Total reward", tag="",
+       title="Versus UCB",
+       subtitle="Relative\nchange: 0.6") -> p1
+
+p1
+```
+
+# Plot - robustness
+- ParKid, ParPar v UCB
+## Points
+```{r, fig.width=4, fig.height=5}
+tmp <- tuned
+tmp$agent <- factor(tmp$agent, levels=c("ParKid", "UcbUcb", "ParPar"))
+tmp %>%
+  filter(agent %in% c("ParKid", "ParPar", "UcbUcb")) %>% 
+  ggplot(aes(x = index, y = total_R, color = agent)) +
+  geom_point(size=1) +
+  facet_grid(agent~.) +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text = element_blank()) +
+  # theme(legend.position = "none") +
+  scale_color_manual("Agent", values = c(
+    "dodgerblue4", "mediumpurple3", "palegreen4")) +
+  lims(y=c(10, 60)) +
+  labs(x = "Model rank", y = "Total reward", 
+       title="Parameter robustness",
+       subtitle="Relative change: 0.6")
+  
+```
