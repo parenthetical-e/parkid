@@ -2364,7 +2364,6 @@ tune31:
 		--metric='total_R' \
 		--stat='mean' \
 		--lr_R=0.6 \
-		--kid_boredom=0.0 \
 		--par_boredom='(loguniform, 0.001, 0.1)' 
 
 # !!! UCB !!!
