@@ -45,14 +45,14 @@ load(paste(analysis_path, "tune28-33.RData", sep=""))
 
 # Behave examples
 ## Kid and parent
-```{r, fig.width=4, fig.height=3}
+```{r, fig.width=5, fig.height=5}
 results %>% 
   filter(agent=="ParKid") %>% 
-  filter(run <= 3) %>% 
+  filter(run <= 6) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=kid_action+1)) +
-  geom_point(size=1, alpha=1, color="dodgerblue4") +
-  geom_line(size=.1, alpha=1, color="dodgerblue4") +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~.) +
   labs(x="Time", y="Action", subtitle="Kid") +
@@ -62,11 +62,11 @@ results %>%
 
 results %>% 
   filter(agent=="ParPar") %>% 
-  filter(run <= 3) %>% 
+  filter(run <= 6) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="dodgerblue4") +
-  geom_line(size=.1, alpha=1, color="dodgerblue4") +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~.) +
   labs(x="Time", y="Action", subtitle="Parent") +
@@ -74,18 +74,33 @@ results %>%
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> p2
 
-p1 + p2 + 
+results %>% 
+  filter(agent=="ParKid") %>% 
+  filter(run <= 6) %>% 
+  filter(del_prob == "0.2") %>% 
+  ggplot(aes(x=global_step, y=par_action+1)) +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(run~.) +
+  labs(x="Time", y="Action", subtitle="Parent\n(inspired)") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p3
+
+
+p1 + p2 + p3 +
   plot_annotation(title="Example model behavoir")
 ```
 ## Ucb
 ```{r, fig.width=2, fig.height=3}
 results %>% 
   filter(agent=="UcbUcb") %>% 
-  filter(run <= 3) %>% 
+  filter(run <= 4) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="palegreen4") +
-  geom_line(size=.1, alpha=1, color="palegreen4") +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~del_prob) +
   labs(x="Time", y="Action", title="Example UCB") +
@@ -97,7 +112,7 @@ p1
 
 # Plot - Total rewards (final)
 ## Points
-```{r, fig.width=5, fig.height=7}
+```{r, fig.width=3.5, fig.height=7}
 results %>% 
   filter(agent != "Oracle") %>% 
   filter(agent != "UcbUcb") %>%
@@ -125,6 +140,7 @@ tmp2 %>%
                 width=.5, alpha=1, 
                 position = position_dodge(width = .6)) +
   theme_classic() +
+  theme(legend.position = "None") +
   scale_colour_manual("Agent", values = c(
     "dodgerblue4","palegreen4", "black")) +
   scale_fill_manual("", values = c(
@@ -141,6 +157,7 @@ tmp2 %>%
                 width=.4, alpha=1,
                 position = position_dodge(width = .6)) +
   theme_classic() +
+  theme(legend.position = "bottom") +
   scale_colour_manual("Agent", values = c(
     "dodgerblue4","palegreen4", "black")) +
   scale_fill_manual("", values = c(
@@ -148,7 +165,7 @@ tmp2 %>%
   labs(x="Relative change in reward value", y="Reward after change", tag="") -> p2
 
 p1 / p2 + 
-  plot_layout(guides = "collect") +
+  # plot_layout(guides = "collect") +
   plot_annotation(title="Parent-Kid versus Parent-Parent",
                   subtitle = "as a function of relative change in value")
 ```
@@ -203,14 +220,14 @@ p1
 # Plot - robustness
 - ParKid, ParPar v UCB
 ## Points
-```{r, fig.width=4, fig.height=5}
+```{r, fig.width=4, fig.height=3}
 tmp <- tuned
 tmp$agent <- factor(tmp$agent, levels=c("ParKid", "UcbUcb", "ParPar"))
 tmp %>%
   filter(agent %in% c("ParKid", "ParPar", "UcbUcb")) %>% 
   ggplot(aes(x = index, y = total_R, color = agent)) +
   geom_point(size=1) +
-  facet_grid(agent~.) +
+  # facet_grid(agent~.) +
   theme_classic() +
   theme(strip.background = element_blank(),
         strip.text = element_blank()) +
@@ -219,7 +236,7 @@ tmp %>%
     "dodgerblue4", "mediumpurple3", "palegreen4")) +
   lims(y=c(10, 60)) +
   labs(x = "Model rank", y = "Total reward", 
-       title="Parameter robustness",
+       title="Parameter choice sensitivity",
        subtitle="Relative change: 0.6")
   
 ```
