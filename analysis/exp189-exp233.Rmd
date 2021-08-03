@@ -30,6 +30,7 @@ source("utils.R")
 ```{r, message=FALSE}
 data_path <- "~/Code/parkid/data/"
 img_path <- "~/Code/parkid/analysis/img/exp189-exp233/"
+analysis_path <- "~/Code/parkid/analysis/"
 dir.create(img_path)
 ```
 
@@ -298,7 +299,7 @@ results %>%
 ```
 
 ## Parents (kid anad ucb)
-```{r, fig.width=12, fig.height=10}
+```{r, fig.width=12, fig.height=15}
 results %>% 
   filter(agent=="ParKid") %>% 
   filter(run <= 10) %>% 
@@ -353,7 +354,7 @@ tmp %>%
   geom_jitter(width=0.2, size=0.2, alpha=.3) +
   stat_summary(fun=median, geom="point", shape=95, size=10) +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   theme_classic() +
   labs(x="Relative change", y="Total reward", tag="") -> p1
 
@@ -362,7 +363,7 @@ tmp %>%
   geom_jitter(width=0.2, size=0.2, alpha=.3) +
   stat_summary(fun=median, geom="point", shape=95, size=10) +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   theme_classic() +
   labs(x="Relative change", y="After change", tag="") -> p2
 
@@ -382,7 +383,7 @@ tmp %>%
   geom_boxplot(width=0.6, size=0.4, alpha=1) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(0, 80)) +
   labs(x="Relative change", y="Total reward", tag="") -> p1
 
@@ -391,7 +392,7 @@ tmp %>%
   geom_boxplot(width=0.6, size=0.4, alpha=1) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(0, 45)) +
   labs(x="Relative change", y="After change", tag="") -> p2
 
@@ -429,7 +430,7 @@ tmp %>%
                 width=.4, alpha=0.5) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(0, 80)) +
   labs(x="Relative change", y="Total reward", tag="") -> p1
 
@@ -440,7 +441,7 @@ tmp %>%
                 width=.4, alpha=0.5) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(0, 45)) +
   labs(x="Relative change", y="After change", tag="") -> p2
 
@@ -450,6 +451,45 @@ p1 / p2 + plot_layout(guides = "collect")
 ```{r, fig.width=6, fig.height=6}
 # Replot change only - zoomed
 p2
+```
+
+### Line
+```{r, fig.width=5, fig.height=8}
+results %>% 
+  group_by(del_prob, agent, exp, run) %>% 
+  summarise(total_R=last(total_R),
+            change_R=last(change_R)) %>% 
+  ungroup() -> tmp
+
+tmp %>%
+  group_by(del_prob, agent, exp) %>%
+  summarise(
+          total_sd=sd(total_R, na.rm = TRUE),
+          total_R=mean(total_R),
+          change_sd=sd(change_R, na.rm = TRUE),  
+          change_R=mean(change_R)) %>% 
+          
+  ungroup() -> tmp
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=total_R, color=agent, fill=agent, group=agent)) +
+  geom_line() +
+  theme_classic() +
+  scale_colour_manual("", values = c(
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
+  lims(y=c(20, 65)) +
+  labs(x="Relative change", y="Total reward", tag="") -> p1
+
+tmp %>% 
+  ggplot(aes(x=del_prob, y=change_R, color=agent, fill=agent, group=agent)) +
+  geom_line() +
+  theme_classic() +
+  scale_colour_manual("", values = c(
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
+  lims(y=c(10, 45)) +
+  labs(x="Relative change", y="After change", tag="") -> p2
+
+p1 / p2 + plot_layout(guides = "collect")
 ```
 
 ### Ribbon
@@ -477,9 +517,9 @@ tmp %>%
               color=NA, alpha=0.2) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   scale_fill_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(20, 65)) +
   labs(x="Relative change", y="Total reward", tag="") -> p1
 
@@ -490,9 +530,9 @@ tmp %>%
               color=NA, alpha=0.2) +
   theme_classic() +
   scale_colour_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   scale_fill_manual("", values = c(
-    "black", "dodgerblue4", "grey", "mediumpurple3")) +
+    "black", "dodgerblue4","palegreen4", "grey", "mediumpurple3")) +
   lims(y=c(10, 45)) +
   labs(x="Relative change", y="After change", tag="") -> p2
 
@@ -501,4 +541,9 @@ p1 / p2 + plot_layout(guides = "collect")
 ```{r, fig.width=6, fig.height=6}
 # Replot change only - zoomed
 p2
+```
+
+# Save data
+```{r}
+save.image(paste(analysis_path, "exp189-exp233.RData", sep=""))
 ```
