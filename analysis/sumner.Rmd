@@ -1,0 +1,112 @@
+---
+title: "Behave plots - from Sumner et al"
+output: html_notebook
+---
+
+# Library
+```{r, message=FALSE}
+library(zoo)
+library(stats)
+library(ggplot2)
+library(tidyr)
+library(patchwork)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(readr)
+library(latex2exp)
+# library(MASS) 
+library(scales)
+library(patchwork)
+options(scipen=1000000)
+
+# Load load_result and other helpful functions
+source("utils.R")
+```
+
+# Paths
+Raw data was downloaded from the OSF, to a single directory 'sumner-advantage'.
+The OSF link is: https://osf.io/4rzsa/
+
+```{r, message=FALSE}
+data_path <- "~/Data/sumner-advantage"
+analysis_path <- "~/Code/parkid/analysis/"
+img_path <- "~/Code/parkid/analysis/img/behave/"
+```
+
+# Load data
+## Study 1
+```{r, message=FALSE, warning=FALSE}
+# Load human data, from SUmner
+# Par
+parents <- read_csv(
+  paste(data_path, "bandit-adult-001-024-lowlevel.csv", sep="/"),
+  show_col_types = FALSE)     
+# Kid
+kids <- read_csv(
+  paste(data_path, "bandit-child-001-024-lowlevel.csv", sep="/"),
+  show_col_types = FALSE)      
+# Add meta
+parents$agent <- "parent"
+kids$agent <- "kid"
+sumner <- bind_rows(parents, kids)
+# Clean
+rm(parents,kids)
+```
+
+# Process
+```{r}
+# Get only response data, and re-index
+# the trial index
+sumner %>% 
+  filter(trial_type == "html-button-response") %>% 
+  filter(trial_index >= 6) %>% 
+  filter(trial_index < 165) %>% 
+  group_by(subjID) %>% 
+  mutate(trial_index=1:length(agent)) -> sumner
+```
+
+# Codes
+## Parents
+```{r}
+sumner %>% 
+  filter(agent == "parent") -> tmp
+  unique(tmp$subjID)
+```
+## Parents
+```{r}
+sumner %>% 
+  filter(agent == "kid") -> tmp
+  unique(tmp$subjID)
+```
+
+# Behave choices
+```{r, fig.height=10, fig.width=5}
+sumner %>% 
+  filter(agent == "parent") %>% 
+  filter(condition == "dynamic") %>% 
+  ggplot(aes(x=trial_index, y=button_pressed)) +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  theme_classic() +
+  facet_wrap(.~subjID) -> p1
+
+sumner %>% 
+  filter(agent == "kid") %>% 
+  filter(condition == "dynamic") %>% 
+  ggplot(aes(x=trial_index, y=button_pressed)) +
+  geom_point(size=1, alpha=1, color="black") +
+  geom_line(size=.1, alpha=1, color="black") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  theme_classic() +
+  facet_wrap(.~subjID) -> p2
+
+p1 / p2
+```
+
+# Save data
+```{r}
+save.image(paste(analysis_path, "sumner.RData", sep=""))
+```
