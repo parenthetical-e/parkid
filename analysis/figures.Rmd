@@ -37,22 +37,58 @@ img_path <- "~/Code/parkid/analysis/img/figures/"
 
 # Load data
 - Load an pre-analyzed dataset. See exp189-exp233.Rmd for its creation.
+- Load pre-processed human data from Sumner et al
 ```{r, message=FALSE, warning=FALSE}
 load(paste(analysis_path, "exp189-exp233.RData", sep=""))
 load(paste(analysis_path, "tune28-33.RData", sep=""))
+load(paste(analysis_path, "sumner.RData", sep=""))
 ```
 
+# Human behave examples
+```{r, fig.width=3.5, fig.height=2.5}
+sumner %>% 
+  # filter(subjID %in% c("I002", "I004", "I005", "I006", "I009", "I014")) %>% 
+  filter(subjID %in% c("I005", "I006", "I009")) %>% 
+  filter(condition == "dynamic") %>% 
+  ggplot(aes(x=trial_index, y=button_pressed)) +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(size=.1, alpha=1, color="dodgerblue4") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(subjID~.) +
+  labs(x="Time", y="Action", subtitle="Kid") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p1
 
-# Behave examples
+sumner %>% 
+  filter(subjID %in% c
+        # ("C107684", "C200608", "C323131", "C795388", "C987589", "C797694")) %>% 
+        ("C107684", "C200608", "C323131")) %>% 
+  filter(condition == "dynamic") %>% 
+  ggplot(aes(x=trial_index, y=button_pressed)) +
+  geom_point(size=1, alpha=1, color="palegreen4") +
+  geom_line(size=.1, alpha=1, color="palegreen4") +
+  geom_vline(xintercept=40, linetype="dotted") +
+  facet_grid(subjID~.) +
+  labs(x="Time", y="Action", subtitle="Parent") +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank()) -> p2
+
+p1 + p2 +
+  plot_annotation(title="Reference human behavoir")
+```
+
+# Model behave examples
 ## Kid and parent
-```{r, fig.width=5, fig.height=5}
+```{r, fig.width=5, fig.height=2.5}
 results %>% 
   filter(agent=="ParKid") %>% 
-  filter(run <= 6) %>% 
+  filter(run <= 3) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=kid_action+1)) +
-  geom_point(size=1, alpha=1, color="black") +
-  geom_line(size=.1, alpha=1, color="black") +
+  geom_point(size=1, alpha=1, color="dodgerblue4") +
+  geom_line(size=.1, alpha=1, color="dodgerblue4") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~.) +
   labs(x="Time", y="Action", subtitle="Kid") +
@@ -62,11 +98,11 @@ results %>%
 
 results %>% 
   filter(agent=="ParPar") %>% 
-  filter(run <= 6) %>% 
+  filter(run <= 3) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="black") +
-  geom_line(size=.1, alpha=1, color="black") +
+  geom_point(size=1, alpha=1, color="palegreen4") +
+  geom_line(size=.1, alpha=1, color="palegreen4") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~.) +
   labs(x="Time", y="Action", subtitle="Parent") +
@@ -76,14 +112,14 @@ results %>%
 
 results %>% 
   filter(agent=="ParKid") %>% 
-  filter(run <= 6) %>% 
+  filter(run <= 3) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="black") +
-  geom_line(size=.1, alpha=1, color="black") +
+  geom_point(size=1, alpha=1, color="palegreen4") +
+  geom_line(size=.1, alpha=1, color="palegreen4") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~.) +
-  labs(x="Time", y="Action", subtitle="Parent\n(inspired)") +
+  labs(x="Time", y="Action", subtitle="Parent (inspired)") +
   theme_classic() +
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()) -> p3
@@ -93,20 +129,21 @@ p1 + p2 + p3 +
   plot_annotation(title="Example model behavoir")
 ```
 ## Ucb
-```{r, fig.width=2, fig.height=3}
+```{r, fig.width=1.75, fig.height=2.5}
 results %>% 
   filter(agent=="UcbUcb") %>% 
-  filter(run <= 4) %>% 
+  filter(run <= 3) %>% 
   filter(del_prob == "0.2") %>% 
   ggplot(aes(x=global_step, y=par_action+1)) +
-  geom_point(size=1, alpha=1, color="black") +
-  geom_line(size=.1, alpha=1, color="black") +
+  geom_point(size=1, alpha=1, color="mediumpurple3") +
+  geom_line(size=.1, alpha=1, color="mediumpurple3") +
   geom_vline(xintercept=40, linetype="dotted") +
   facet_grid(run~del_prob) +
-  labs(x="Time", y="Action", title="Example UCB") +
+  labs(x="Time", y="Action", title="Example UCB",
+       subtitle="Change: 0.6") +
   theme_classic() +
   theme(strip.background = element_blank(),
-        strip.text.y = element_blank()) -> p1
+        strip.text = element_blank()) -> p1
 p1 
 ```
 
@@ -140,7 +177,7 @@ tmp2 %>%
                 width=.5, alpha=1, 
                 position = position_dodge(width = .6)) +
   theme_classic() +
-  theme(legend.position = "None") +
+  theme(legend.position = "none") +
   scale_colour_manual("Agent", values = c(
     "dodgerblue4","palegreen4", "black")) +
   scale_fill_manual("", values = c(
@@ -212,7 +249,7 @@ tmp2 %>%
     "dodgerblue4","mediumpurple3", "palegreen4", "black")) +
   labs(x="Agent", y="Total reward", tag="",
        title="Versus UCB",
-       subtitle="Relative\nchange: 0.6") -> p1
+       subtitle="Change: 0.6") -> p1
 
 p1
 ```
@@ -237,6 +274,6 @@ tmp %>%
   lims(y=c(10, 60)) +
   labs(x = "Model rank", y = "Total reward", 
        title="Parameter choice sensitivity",
-       subtitle="Relative change: 0.6")
+       subtitle="Change: 0.6")
   
 ```
